@@ -3,10 +3,12 @@ import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
 
 const Home = () => {
+  const contactLink = "https://api.whatsapp.com/send?phone=+527121924905&text=Hola,%20estoy%20interesado%20en%20contratar%20tus%20servicios%20para%20monitoreo%20de%20cultivos.";
+
   const navItems = [
-    { label: 'Mi perfil', link: '/profile' },
-    { label: 'Mis cultivos', link: '/cultivos' },
-    { label: 'Contacto', link: '/contacto' },
+    // { label: 'Mi perfil', link: '/profile' },
+    // { label: 'Mis cultivos', link: '/cultivos' },
+    { label: 'Contacto', link: contactLink },
   ];
 
   const quotes = [
@@ -59,7 +61,7 @@ const Home = () => {
         <section className="bg-gris-suave text-center py-12 mb-8">
           <h2 className="text-2xl font-poppins font-semibold text-verde-profundo mb-4">¡Contáctanos!</h2>
           <a
-            href="https://api.whatsapp.com/send?phone=+527121924905&text=Hola,%20estoy%20interesado%20en%20contratar%20tus%20servicios%20para%20monitoreo%20de%20cultivos."
+            href={contactLink}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex flex-col items-center justify-center bg-[#25D366] text-white font-poppins font-semibold text-4xl px-8 py-4 rounded-lg hover:bg-[#1EB554] transition duration-200"

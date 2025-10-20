@@ -1,15 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
+import useAuth from '../hooks/useAuth';
 
 const Login = () => {
+  const { loginUser, loading, error } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const contactLink = "https://api.whatsapp.com/send?phone=+527121924905&text=Hola,%20estoy%20interesado%20en%20contratar%20tus%20servicios%20para%20monitoreo%20de%20cultivos.";
+
   const navItems = [
-    { label: 'Mi perfil', link: '/profile' },
-    { label: 'Mis cultivos', link: '/cultivos' },
-    { label: 'Contacto', link: '/contacto' },
+    { label: 'Contacto', link: contactLink },
   ];
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    await loginUser(email, password);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -29,19 +38,26 @@ const Login = () => {
               <div className="h-full flex items-center">
                 <div className="w-full">
                   <h2 className="text-2xl font-poppins font-semibold text-negro-texto mb-7 text-center">¡Hola, inicia sesión!</h2>
-                  <Input
-                    type="text"
-                    placeholder="Correo"
-                    className="mb-4"
-                  />
-                  <Input
-                    type="password"
-                    placeholder="Contraseña"
-                    className="mb-6"
-                  />
-                  <Button variant="tertiary" className="w-full">
-                    Ingresar →
-                  </Button>
+                  {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+                  <form onSubmit={handleLogin}>
+                    <Input
+                      type="text"
+                      placeholder="Correo"
+                      className="mb-4"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <Input
+                      type="password"
+                      placeholder="Contraseña"
+                      className="mb-6"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <Button variant="tertiary" className="w-full" disabled={loading}>
+                      {loading ? 'Iniciando...' : 'Ingresar →'}
+                    </Button>
+                  </form>
                 </div>
               </div>
             </div>
