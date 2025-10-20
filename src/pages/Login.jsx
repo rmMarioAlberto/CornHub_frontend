@@ -1,33 +1,26 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Input from '../components/common/Input';
-import Button from '../components/common/Button';
-import useAuth from '../hooks/useAuth'; // Asume hook para login JWT
+import React from 'react';
+import Header from '../components/common/Header';
+import Footer from '../components/common/Footer';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { login } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    await login(email, password);
-    navigate('/dashboard'); // Redirige según rol
-  };
+  const navItems = [
+    { label: 'Mi perfil', link: '/profile' },
+    { label: 'Mis cultivos', link: '/cultivos' },
+    { label: 'Contacto', link: '/contacto' },
+  ];
 
   return (
-    <div className="flex h-screen">
-      <div className="w-1/2 bg-cover" style={{ backgroundImage: 'url(/assets/images/agricola.jpg)' }}></div> {/* Placeholder imagen */}
-      <div className="w-1/2 flex items-center justify-center">
-        <form onSubmit={handleSubmit} className="w-3/4">
-          <h1 className="text-2xl mb-6">Iniciar Sesión</h1>
-          <Input label="Correo / Nombre de usuario" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <Input label="Contraseña" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <Button variant="primary" className="w-full">Ingresar</Button>
-          <Button onClick={() => navigate('/')} className="mt-2 text-verde-medio">Regresar</Button>
-        </form>
-      </div>
+    <div className="min-h-screen flex flex-col">
+      <Header navItems={navItems} buttonText="Inicia Sesión" buttonLink="/login" />
+      <main className="container flex-grow flex items-center justify-center bg-gris-suave p-8">
+        <div className="card w-full max-w-md">
+          <h2 className="text-2xl font-poppins font-semibold text-verde-profundo mb-4">¡Hola, inicia sesión!</h2>
+          <input type="text" placeholder="Correo / Nombre usuario" className="w-full p-2 mb-4 border rounded-md" />
+          <input type="password" placeholder="Contraseña" className="w-full p-2 mb-4 border rounded-md" />
+          <button className="bg-verde-profundo text-white px-4 py-2 rounded-md font-poppins font-semibold w-full">Ingresar →</button>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 };

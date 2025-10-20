@@ -8,7 +8,7 @@ const AdminDashboard = () => {
   return (
     <div className="p-6">
       <header className="bg-verde-profundo text-white p-4 flex justify-between">
-        <img src="/assets/images/lettucecirity-icono.jpg" alt="CP Killers" />
+        <img src="/assets/images/lettucecirity-icono.png" alt="Lettucecurity" />
         <span>{user?.name}</span>
         <nav> {/* Menú */} </nav>
       </header>
