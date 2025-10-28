@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Footer = ({ links = [{ category: 'Resources', items: [{ label: 'Blog', href: '#' }, { label: 'Best practices', href: '#' }, { label: 'Colors', href: '#' }, { label: 'Color wheel', href: '#' }, { label: 'Support', href: '#' }, { label: 'Developers', href: '#' }, { label: 'Resource library', href: '#' }] }], logoSrc = '/public/assets/images/lettucecirity-icono.png' }) => {
+const Footer = ({ links = [{ category: 'Resources', items: [{ label: 'Blog', href: '#' }, { label: 'Best practices', href: '#' }, { label: 'Colors', href: '#' }, { label: 'Color wheel', href: '#' }, { label: 'Support', href: '#' }, { label: 'Developers', href: '#' }, { label: 'Resource library', href: '#' }] }], logoSrc = '/assets/images/lettucecirity-icono.png' }) => {
   return (
     <footer className="bg-white border-t border-gray-200 py-6">
       <hr className="border-gray-300 mb-6" />

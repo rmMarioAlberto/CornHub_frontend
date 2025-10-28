@@ -12,9 +12,9 @@ const Home = () => {
   ];
 
   const quotes = [
-    { id: 1, title: 'Quote 1', description: 'Description 1', image: '/public/assets/images/quote1.png' },
-    { id: 2, title: 'Quote 2', description: 'Description 2', image: '/public/assets/images/quote1.png' },
-    { id: 3, title: 'Quote 3', description: 'Description 3', image: '/public/assets/images/quote1.png' },
+    { id: 1, title: 'Quote 1', description: 'Description 1', image: '/assets/images/quote1.png' },
+    { id: 2, title: 'Quote 2', description: 'Description 2', image: '/assets/images/quote1.png' },
+    { id: 3, title: 'Quote 3', description: 'Description 3', image: '/assets/images/quote1.png' },
   ];
 
   return (
@@ -29,9 +29,9 @@ const Home = () => {
         {/* Hero Section with Background Image */}
         <section
           className="relative bg-cover bg-center h-96 mb-8"
-          style={{ backgroundImage: "url('/public/assets/images/home.jpg')" }}
+          style={{ backgroundImage: "url('/assets/images/home.jpg')" }}
         >
-          <div className="absolute inset-0 bg-white opacity-75"></div>
+          <div className="absolute inset-0 bg-white opacity-40"></div>
           <div className="relative flex items-center justify-center h-full">
             <div className="text-center z-10">
               <h1 className="text-4xl font-poppins font-semibold text-verde-profundo mb-4">Lettucecurity</h1>
@@ -52,7 +52,7 @@ const Home = () => {
               </div>
             ))}
             <div className="card flex items-center justify-center">
-              <img src="/public/assets/images/test.jpg" alt="Contact Image" className="w-full h-32 object-cover rounded-md" />
+              <img src="/assets/images/test.jpg" alt="Contact Image" className="w-full h-32 object-cover rounded-md" />
             </div>
           </div>
         </section>
@@ -66,7 +66,7 @@ const Home = () => {
             rel="noopener noreferrer"
             className="inline-flex flex-col items-center justify-center bg-[#25D366] text-white font-poppins font-semibold text-4xl px-8 py-4 rounded-lg hover:bg-[#1EB554] transition duration-200"
           >
-            <img src="/public/assets/images/whatsapp_icon.webp" alt="WhatsApp Icon" className="w-20 mb-2" />
+            <img src="/assets/images/whatsapp_icon.webp" alt="WhatsApp Icon" className="w-20 mb-2" />
             Contratar nuestros servicios
           </a>
         </section>

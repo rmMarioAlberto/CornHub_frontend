@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Button from './Button'; 
 
-const Header = ({ navItems = [], buttonText = '', buttonLink = '/', logoSrc = '/public/assets/images/lettucecirity-icono.png', bgColor = 'verde-lima-claro' }) => {
+const Header = ({ navItems = [], buttonText = '', buttonLink = '/', logoSrc = '/assets/images/lettucecirity-icono.png', bgColor = 'verde-lima-claro' }) => {
   return (
     <header className={`p-4 flex justify-between items-center shadow-md ${bgColor}`}>
       <div className="flex items-center">

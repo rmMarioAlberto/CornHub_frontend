@@ -32,7 +32,7 @@ const Login = () => {
         <div className="max-w-4xl mx-auto p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0 h-96">
             {/* Columna izquierda: Imagen */}
-            <div className="h-full bg-cover bg-center" style={{ backgroundImage: "url('/public/assets/images/login.webp')" }}></div>
+            <div className="h-full bg-cover bg-center" style={{ backgroundImage: "url('/assets/images/login.webp')" }}></div>
             {/* Columna derecha: Formulario */}
             <div className="bg-gris-suave px-6">
               <div className="h-full flex items-center">
