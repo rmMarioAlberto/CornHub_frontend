@@ -1,5 +1,5 @@
-const API_URL = 'https://corn-hub-backend.vercel.app/api'; // Ajusta según tu backend
-// const API_URL = 'https://corn-hub-backend.vercel.app/api'; // Ajusta según tu backend
+// src/api/auth.js
+import { API_URL } from '../utils/env'; // Importa desde utils
 
 export const register = async (userData) => {
   const response = await fetch(`${API_URL}/auth/register`, {
