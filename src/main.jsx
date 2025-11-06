@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './styles/index.css'; // Incluye Tailwind y Poppins
 import App from './App.jsx';
+import './styles/index.css'; // Incluye Tailwind y Poppins
 import { AuthProvider } from './context/AuthContext';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
