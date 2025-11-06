@@ -16,8 +16,11 @@ const useAuth = () => {
 
     try {
       const data = await register(userData);
-      setAuth({ user: data.usuario });
-      localStorage.setItem('user', JSON.stringify(data.usuario));
+      // El backend puede devolver el nuevo usuario en `data.usuario`.
+      // Proteger en caso de que la respuesta no incluya `usuario`.
+      const newUser = data?.usuario ?? null;
+      setAuth({ user: newUser });
+      if (newUser) localStorage.setItem('user', JSON.stringify(newUser));
       navigate('/login'); // Redirigir a login tras registro
     } catch (err) {
       setError(err.message);
@@ -33,12 +36,36 @@ const useAuth = () => {
 
     try {
       const data = await login({ correo: email, contra: password });
+      // La respuesta actual del servidor devuelve sólo accessToken/refreshToken.
+      // En el futuro se espera que también devuelva `usuario` y `tipo_usuario`.
+      // Ejemplo esperado (futuro): { accessToken, usuario: { id: 1, nombre: 'x', tipo_usuario: 1 } }
       const { accessToken, usuario } = data;
 
-      setAuth({ accessToken, user: usuario });
-      localStorage.setItem('user', JSON.stringify(usuario));
-      const redirectPath = usuario.tipo_usuario === 1 ? '/admin' : '/farmer';
+      // Guardar en el contexto — `user` puede ser null si el backend no lo retornó.
+      const user = usuario ?? null;
+      setAuth({ accessToken, user });
+
+      // Guardar solo si existe el usuario en la respuesta
+      if (user) localStorage.setItem('user', JSON.stringify(user));
+
+      // Determinar ruta de redirección de forma segura.
+      // Usamos optional chaining para evitar "Cannot read properties of undefined"
+      // Si `usuario` no viene, por ahora redirigimos a '/farmer' por defecto.
+      const redirectPath = user?.tipo_usuario === 1 ? '/admin' : '/farmer';
       navigate(redirectPath);
+
+      /*
+        Nota para el futuro (cuando el backend incluya `usuario` y `tipo_usuario`):
+        - Si el backend devuelve `usuario` como un arreglo, por ejemplo `usuario: [ {...} ]`,
+          extraer el elemento correcto antes de usarlo:
+
+            // Ejemplo si backend devuelve array:
+            // const usuarioArray = data.usuario;
+            // const usuarioObj = Array.isArray(usuarioArray) ? usuarioArray[0] : usuarioArray;
+            // const user = usuarioObj ?? null;
+
+        - Luego usar `user?.tipo_usuario` para decidir la ruta.
+      */
     } catch (err) {
       setError(err.message);
     } finally {
@@ -53,7 +80,9 @@ const useAuth = () => {
 
     try {
       await logout();
-      setAuth(null);
+      // Mantener la forma esperada del estado `auth` (objeto) para evitar errores
+      // en componentes que acceden a `auth.user`. Usar objeto con user null.
+      setAuth({ user: null, accessToken: null });
       localStorage.removeItem('user');
       navigate('/login');
     } catch (err) {

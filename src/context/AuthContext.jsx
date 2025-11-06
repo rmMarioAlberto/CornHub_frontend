@@ -31,7 +31,9 @@ export const AuthProvider = ({ children }) => {
   }, [auth.user]);
 
   return (
-    <AuthContext.Provider value={{ auth, updateAuth }}>
+    // Exponer tanto el estado `auth`, la función `updateAuth` (merge + localStorage)
+    // y el setter directo `setAuth` para compatibilidad con consumidores existentes.
+    <AuthContext.Provider value={{ auth, updateAuth, setAuth }}>
       {children}
     </AuthContext.Provider>
   );

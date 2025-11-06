@@ -8,7 +8,7 @@ import Login from '../pages/Login';
 // import Register from '../pages/Register';
 
 // // --- IMPORTA TODAS LAS VISTAS (para desarrollo directo) ---
-// import AdminDashboard from '../pages/AdminDashboard';
+import AdminDashboard from '../pages/AdminDashboard';
 // import FarmerDashboard from '../pages/FarmerDashboard';
 // import FieldRegistration from '../pages/FieldRegistration';
 // import FieldDetails from '../pages/FieldDetails';
@@ -88,8 +88,8 @@ const AppRoutes = () => {
       {/* ====================== RUTAS DIRECTAS (sin login) ====================== */}
       <Route path="/home" element={<Home />} />
       <Route path="/login" element={<Login />} />
-      {/* <Route path="/register" element={<Register />} />
       <Route path="/admin" element={<AdminDashboard />} />
+      {/* <Route path="/register" element={<Register />} />
       <Route path="/farmer" element={<FarmerDashboard />} />
       <Route path="/create-field" element={<FieldRegistration />} />
       <Route path="/field/:id" element={<FieldDetails />} />
