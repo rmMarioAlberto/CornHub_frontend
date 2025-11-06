@@ -9,15 +9,63 @@ const Login = () => {
   const { loginUser, loading, error } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [formErrors, setFormErrors] = useState({});
+  const [touched, setTouched] = useState({ email: false, password: false });
   const contactLink = "https://api.whatsapp.com/send?phone=+527121924905&text=Hola,%20estoy%20interesado%20en%20contratar%20tus%20servicios%20para%20monitoreo%20de%20cultivos.";
 
   const navItems = [
     { label: 'Contacto', link: contactLink },
   ];
 
+  const validateEmail = (value) => {
+    // Simple RFC-like email regex (sufficient for basic validation)
+    const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@\"]+\.)+[^<>()[\]\\.,;:\s@\"]{2,})$/i;
+    return re.test(String(value).toLowerCase());
+  };
   const handleLogin = async (e) => {
     e.preventDefault();
-    await loginUser(email, password);
+    // Validar una vez más antes de enviar
+    const errors = {};
+    if (!email || email.trim() === '') {
+      errors.email = 'El correo es requerido.';
+    } else if (!validateEmail(email)) {
+      errors.email = 'Formato de correo inválido.';
+    }
+
+    if (!password || password.trim() === '') {
+      errors.password = 'La contraseña es requerida.';
+    }
+
+    setFormErrors(errors);
+
+    // Si hay errores, no llamar al servidor
+    if (Object.keys(errors).length > 0) return;
+
+    await loginUser(email.trim(), password);
+  };
+
+  // Validación en tiempo real: validar campo individual y actualizar errores
+  const handleFieldChange = (name, value) => {
+    if (name === 'email') setEmail(value);
+    if (name === 'password') setPassword(value);
+
+    // Marcar como tocado
+    setTouched((t) => ({ ...t, [name]: true }));
+
+    // Validar campo y actualizar formErrors
+    setFormErrors((prev) => {
+      const next = { ...prev };
+      if (name === 'email') {
+        if (!value || value.trim() === '') next.email = 'El correo es requerido.';
+        else if (!validateEmail(value)) next.email = 'Formato de correo inválido.';
+        else delete next.email;
+      }
+      if (name === 'password') {
+        if (!value || value.trim() === '') next.password = 'La contraseña es requerida.';
+        else delete next.password;
+      }
+      return next;
+    });
   };
 
   return (
@@ -29,34 +77,66 @@ const Login = () => {
         bgColor="verde-lima-claro"
       />
       <main className="flex-grow flex items-center justify-center">
-        <div className="max-w-4xl mx-auto p-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 h-96">
-            {/* Columna izquierda: Imagen */}
-            <div className="h-full bg-cover bg-center" style={{ backgroundImage: "url('/assets/images/login.webp')" }}></div>
-            {/* Columna derecha: Formulario */}
-            <div className="bg-gris-suave px-6">
-              <div className="h-full flex items-center">
-                <div className="w-full">
+        <div className="w-full max-w-4xl mx-auto p-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+            {/* Columna izquierda: Imagen - col-span-1 fuerza que ocupe exactamente una columna */}
+            <div className="col-span-1 aspect-[3/4] bg-cover bg-center" style={{ backgroundImage: "url('/assets/images/login.webp')" }}></div>
+            {/* Columna derecha: Formulario - col-span-1 fuerza que ocupe exactamente una columna */}
+            <div className="col-span-1 bg-gris-suave px-6">
+              <div className="h-full flex items-center min-h-[480px]">
+                <div className="w-full py-8">
                   <h2 className="text-2xl font-poppins font-semibold text-negro-texto mb-7 text-center">¡Hola, inicia sesión!</h2>
                   {error && <p className="text-red-500 text-center mb-4">{error}</p>}
                   <form onSubmit={handleLogin}>
-                    <Input
-                      type="text"
-                      placeholder="Correo"
-                      className="mb-4"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <Input
-                      type="password"
-                      placeholder="Contraseña"
-                      className="mb-6"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <Button variant="tertiary" className="w-full" disabled={loading}>
-                      {loading ? 'Iniciando...' : 'Ingresar →'}
-                    </Button>
+                    <div className="h-[70px]">
+                      <Input
+                        type="text"
+                        placeholder="Correo"
+                        className="mb-1"
+                        value={email}
+                        onChange={(e) => handleFieldChange('email', e.target.value)}
+                        onBlur={() => setTouched((t) => ({ ...t, email: true }))}
+                      />
+                      {formErrors.email && (
+                        <p className="text-red-500 text-sm">{formErrors.email}</p>
+                      )}
+                    </div>
+                    <div className="h-[70px] mb-4">
+                      <Input
+                        type="password"
+                        placeholder="Contraseña"
+                        className="mb-1"
+                        value={password}
+                        onChange={(e) => handleFieldChange('password', e.target.value)}
+                        onBlur={() => setTouched((t) => ({ ...t, password: true }))}
+                      />
+                      {formErrors.password && (
+                        <p className="text-red-500 text-sm">{formErrors.password}</p>
+                      )}
+                    </div>
+                    {/* Contenedor para el botón y su tooltip */}
+                    <div className="relative group w-full">
+                      <Button
+                        variant="tertiary"
+                        className={`w-full ${
+                          loading || Object.keys(formErrors).length > 0 || !email.trim() || !password.trim()
+                            ? 'cursor-not-allowed opacity-70'
+                            : ''
+                        }`}
+                        disabled={loading || Object.keys(formErrors).length > 0 || !email.trim() || !password.trim()}
+                      >
+                        {loading ? 'Iniciando...' : 'Ingresar →'}
+                      </Button>
+                      {/* Tooltip que aparece solo cuando el botón está deshabilitado */}
+                      {(Object.keys(formErrors).length > 0 || !email.trim() || !password.trim()) && (
+                        <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 invisible group-hover:visible 
+                          bg-gray-800 text-white text-sm px-3 py-2 rounded-md whitespace-nowrap transition-all duration-200">
+                          Por favor, completa todos los campos correctamente
+                          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 
+                            border-8 border-transparent border-t-gray-800"></div>
+                        </div>
+                      )}
+                    </div>
                   </form>
                 </div>
               </div>
