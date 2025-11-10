@@ -10,7 +10,6 @@ import Login from '../pages/Login';
 // --- PÁGINAS PROTEGIDAS ---
 import AdminDashboard from '../pages/AdminDashboard';
 import IoTModuleSetup from '../pages/IoTModuleSetup';
-import CropManagement from '../pages/CropManagement';
 import FieldManagement from '../pages/FieldManagement';
 import UserManagement from '../pages/UserManagement';
 import FarmerDashboard from '../pages/FarmerDashboard';
@@ -36,7 +35,6 @@ const AppRoutes = () => {
       <Route>
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/iot" element={<IoTModuleSetup />} />
-        <Route path="/admin/crops" element={<CropManagement />} />
         <Route path="/admin/fields" element={<FieldManagement />} />
         <Route path="/admin/users" element={<UserManagement />} />
       </Route>

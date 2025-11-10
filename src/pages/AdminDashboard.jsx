@@ -141,9 +141,6 @@ const AdminDashboard = () => {
             <Button variant="primary" as={Link} to="/admin/iot">
               Gestionar IoT
             </Button>
-            <Button variant="primary" as={Link} to="/admin/crops">
-              Gestionar Cultivos
-            </Button>
             <Button variant="primary" as={Link} to="/admin/fields">
               Gestionar Parcelas
             </Button>
