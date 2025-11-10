@@ -1,7 +1,6 @@
 // src/components/farmer/FarmerHeader.jsx
 import React from 'react';
 import Header from '../common/Header';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import Button from '../common/Button';
 
@@ -17,8 +16,8 @@ const FarmerHeader = () => {
   return (
     <Header
       navItems={navItems}
-      buttonText="Cerrar sesión"
-      buttonLink="#"
+      buttonText="Regresar"
+      buttonLink="/"
       bgColor="bg-verde-lima"
       logoSrc="/assets/images/lettucecirity-icono.png"
     >
