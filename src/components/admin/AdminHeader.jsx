@@ -18,6 +18,7 @@ const AdminHeader = () => {
     { label: 'Mi Perfil', link: '/admin/profile' },
     { label: 'Crear Cultivos', link: '/admin/create-crop' }, // Ajustado a "Crear Cultivos" para legibilidad (imagen usa "CrearCultivos")
     { label: 'Usuarios', link: '/admin/users' },
+    { label: 'IoT', link: '/admin/iot' },
   ];
 
   return (

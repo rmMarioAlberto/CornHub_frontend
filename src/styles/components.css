@@ -130,13 +130,14 @@
     }
 
     /* Sección hero con imagen */
+    /* En tu components.css (ya deberías tenerlos, pero confirmemos) */
     .hero-section {
         position: relative;
         width: 100%;
         height: 24rem;
         background-size: cover;
         background-position: center;
-        border-radius: 0.5rem;
+        /* border-radius: 0.5rem; */
         overflow: hidden;
         display: flex;
         align-items: center;
@@ -146,7 +147,7 @@
     .hero-overlay {
         position: absolute;
         inset: 0;
-        background-color: rgba(0, 0, 0, 0.3);
+        background-color: rgba(0, 0, 0, 0.5);
     }
 
     .hero-content {
