@@ -1,315 +1,318 @@
 /* Tailwind Component Layer - Estilos centralizados usando CSS puro con Tailwind v4 */
 
 @layer components {
-  /* Botones */
-  .btn-primary {
-    display: inline-block;
-    padding: 0.625rem 1.25rem;
-    border-radius: 0.5rem;
-    background-color: rgb(46, 92, 63);
-    color: white;
-    font-weight: 500;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease-in-out;
-    border: none;
-    cursor: pointer;
-  }
 
-  .btn-primary:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    opacity: 0.9;
-  }
-
-  .btn-primary:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  .btn-secondary {
-    display: inline-block;
-    padding: 0.625rem 1.25rem;
-    border-radius: 0.5rem;
-    background-color: rgb(195, 209, 141);
-    color: rgb(26, 26, 26);
-    font-weight: 500;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease-in-out;
-    border: none;
-    cursor: pointer;
-  }
-
-  .btn-secondary:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    opacity: 0.9;
-  }
-
-  .btn-secondary:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  .btn-tertiary {
-    display: inline-block;
-    padding: 0.625rem 1.25rem;
-    border-radius: 0.5rem;
-    background-color: rgb(109, 165, 68);
-    color: white;
-    font-weight: 500;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease-in-out;
-    border: none;
-    cursor: pointer;
-  }
-
-  .btn-tertiary:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    opacity: 0.9;
-  }
-
-  .btn-tertiary:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  /* Inputs */
-  .input-field {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid rgb(229, 231, 235);
-    border-radius: 0.5rem;
-    font-family: 'Poppins', sans-serif;
-    color: rgb(26, 26, 26);
-    transition: all 0.2s ease-in-out;
-  }
-
-  .input-field::placeholder {
-    color: rgb(156, 163, 175);
-  }
-
-  .input-field:hover {
-    border-color: rgb(209, 213, 219);
-  }
-
-  .input-field:focus {
-    outline: none;
-    border-color: rgb(46, 92, 63);
-    box-shadow: 0 0 0 3px rgba(46, 92, 63, 0.1);
-  }
-
-  /* Tarjetas */
-  .card {
-    background-color: white;
-    border-radius: 0.5rem;
-    padding: 1.125rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.2s ease-in-out;
-  }
-
-  .card:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  }
-
-  /* Contenedor principal */
-  .container-main {
-    max-width: 1440px;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  /* Banner de alerta */
-  .alert-banner {
-    background-color: rgb(254, 242, 242);
-    border-left: 4px solid rgb(239, 68, 68);
-    padding: 1rem;
-    border-radius: 0.25rem;
-    color: rgb(127, 29, 29);
-    font-weight: 500;
-  }
-
-  /* Sección hero con imagen */
-  .hero-section {
-    position: relative;
-    width: 100%;
-    height: 24rem;
-    background-size: cover;
-    background-position: center;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .hero-overlay {
-    position: absolute;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.3);
-  }
-
-  .hero-content {
-    position: relative;
-    z-index: 10;
-    text-align: center;
-    color: white;
-  }
-
-  /* Grid de quote cards */
-  .quote-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin: 2rem 0;
-  }
-
-  @media (max-width: 768px) {
-    .quote-grid {
-      grid-template-columns: 1fr;
+    /* Botones */
+    .btn-primary {
+        display: inline-block;
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem;
+        background-color: rgb(46, 92, 63);
+        color: white;
+        font-weight: 500;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease-in-out;
+        border: none;
+        cursor: pointer;
     }
-  }
 
-  .quote-card {
-    background-color: white;
-    border-radius: 0.5rem;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease-in-out;
-    text-align: center;
-  }
+    .btn-primary:hover {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        opacity: 0.9;
+    }
 
-  .quote-card:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  }
+    .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
 
-  /* Sección de contacto */
-  .contact-section {
-    background-color: rgb(109, 165, 68);
-    color: white;
-    padding: 3rem 0;
-    border-radius: 0.5rem;
-    text-align: center;
-  }
+    .btn-secondary {
+        display: inline-block;
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem;
+        background-color: rgb(195, 209, 141);
+        color: rgb(26, 26, 26);
+        font-weight: 500;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease-in-out;
+        border: none;
+        cursor: pointer;
+    }
 
-  .contact-section h2 {
-    color: white;
-  }
+    .btn-secondary:hover {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        opacity: 0.9;
+    }
 
-  /* Header/Nav */
-  .header-main {
-    background-color: white;
-    border-bottom: 1px solid rgb(229, 231, 235);
-    padding: 1rem 1.5rem;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  }
+    .btn-secondary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
 
-  .nav-link {
-    color: rgb(26, 26, 26);
-    transition: color 0.2s ease-in-out;
-    font-weight: 500;
-  }
+    .btn-tertiary {
+        display: inline-block;
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem;
+        background-color: rgb(109, 165, 68);
+        color: white;
+        font-weight: 500;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease-in-out;
+        border: none;
+        cursor: pointer;
+    }
 
-  .nav-link:hover {
-    color: rgb(46, 92, 63);
-  }
+    .btn-tertiary:hover {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        opacity: 0.9;
+    }
 
-  /* Footer */
-  .footer-main {
-    background-color: white;
-    border-top: 2px solid rgb(229, 231, 235);
-    padding: 3rem 0;
-    margin-top: auto;
-  }
+    .btn-tertiary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
 
-  .footer-link {
-    color: rgb(75, 85, 99);
-    transition: color 0.2s ease-in-out;
-  }
+    /* Inputs */
+    .input-field {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid rgb(229, 231, 235);
+        border-radius: 0.5rem;
+        font-family: 'Poppins', sans-serif;
+        color: rgb(26, 26, 26);
+        transition: all 0.2s ease-in-out;
+    }
 
-  .footer-link:hover {
-    color: rgb(46, 92, 63);
-  }
+    .input-field::placeholder {
+        color: rgb(156, 163, 175);
+    }
 
-  /* Formularios */
-  .form-group {
-    margin-bottom: 1.25rem;
-    height: 70px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
+    .input-field:hover {
+        border-color: rgb(209, 213, 219);
+    }
 
-  .form-label {
-    display: block;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: rgb(26, 26, 26);
-    margin-bottom: 0.5rem;
-  }
+    .input-field:focus {
+        outline: none;
+        border-color: rgb(46, 92, 63);
+        box-shadow: 0 0 0 3px rgba(46, 92, 63, 0.1);
+    }
 
-  .error-message {
-    color: rgb(220, 38, 38);
-    font-size: 0.75rem;
-    margin-top: 0.25rem;
-    font-weight: 500;
-  }
+    /* Tarjetas */
+    .card {
+        background-color: white;
+        border-radius: 0.5rem;
+        padding: 1.125rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.2s ease-in-out;
+    }
 
-  /* Badges */
-  .badge-success {
-    display: inline-block;
-    background-color: rgb(168, 205, 189);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.875rem;
-    font-weight: 500;
-  }
+    .card:hover {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
 
-  .badge-warning {
-    display: inline-block;
-    background-color: rgb(250, 204, 21);
-    color: rgb(26, 26, 26);
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.875rem;
-    font-weight: 500;
-  }
+    /* Contenedor principal */
+    .container-main {
+        max-width: 1440px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 
-  .badge-danger {
-    display: inline-block;
-    background-color: rgb(239, 68, 68);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.875rem;
-    font-weight: 500;
-  }
+    /* Banner de alerta */
+    .alert-banner {
+        background-color: rgb(254, 242, 242);
+        border-left: 4px solid rgb(239, 68, 68);
+        padding: 1rem;
+        border-radius: 0.25rem;
+        color: rgb(127, 29, 29);
+        font-weight: 500;
+    }
 
-  /* Separador */
-  .divider {
-    border-top: 1px solid rgb(229, 231, 235);
-    margin: 1.5rem 0;
-  }
+    /* Sección hero con imagen */
+    .hero-section {
+        position: relative;
+        width: 100%;
+        height: 24rem;
+        background-size: cover;
+        background-position: center;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-  /* Tipografía */
-  h1 {
-    font-size: 1.875rem;
-    font-weight: 700;
-    color: rgb(46, 92, 63);
-    margin-bottom: 1rem;
-  }
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.3);
+    }
 
-  h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: rgb(46, 92, 63);
-    margin-bottom: 0.75rem;
-  }
+    .hero-content {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        color: white;
+    }
 
-  h3 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: rgb(46, 92, 63);
-    margin-bottom: 0.5rem;
-  }
+    /* Grid de quote cards */
+    .quote-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    @media (max-width: 768px) {
+        .quote-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .quote-card {
+        background-color: white;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease-in-out;
+        text-align: center;
+    }
+
+    .quote-card:hover {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Sección de contacto */
+    .contact-section {
+        background-color: rgb(109, 165, 68);
+        color: white;
+        padding: 3rem 0;
+        border-radius: 0.5rem;
+        text-align: center;
+    }
+
+    .contact-section h2 {
+        color: white;
+    }
+
+    /* Header/Nav */
+    .header-main {
+        background-color: white;
+        border-bottom: 1px solid rgb(229, 231, 235);
+        padding: 1rem 1.5rem;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-link {
+        color: currentColor;
+        /* Hereda del padre (blanco en admin, oscuro en otros) */
+        transition: color 0.2s ease-in-out;
+        font-weight: 500;
+    }
+
+    .nav-link:hover {
+        color: rgb(195, 209, 141);
+        /* Verde lima claro #C3D18D para hover en fondos oscuros */
+    }
+
+    /* Footer */
+    .footer-main {
+        background-color: white;
+        border-top: 2px solid rgb(229, 231, 235);
+        padding: 3rem 0;
+        margin-top: auto;
+    }
+
+    .footer-link {
+        color: rgb(75, 85, 99);
+        transition: color 0.2s ease-in-out;
+    }
+
+    .footer-link:hover {
+        color: rgb(46, 92, 63);
+    }
+
+    /* Formularios */
+    .form-group {
+        margin-bottom: 1.25rem;
+        height: 70px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: rgb(26, 26, 26);
+        margin-bottom: 0.5rem;
+    }
+
+    .error-message {
+        color: rgb(220, 38, 38);
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+    }
+
+    /* Badges */
+    .badge-success {
+        display: inline-block;
+        background-color: rgb(168, 205, 189);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .badge-warning {
+        display: inline-block;
+        background-color: rgb(250, 204, 21);
+        color: rgb(26, 26, 26);
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .badge-danger {
+        display: inline-block;
+        background-color: rgb(239, 68, 68);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    /* Separador */
+    .divider {
+        border-top: 1px solid rgb(229, 231, 235);
+        margin: 1.5rem 0;
+    }
+
+    /* Tipografía */
+    h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: rgb(46, 92, 63);
+        margin-bottom: 1rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: rgb(46, 92, 63);
+        margin-bottom: 0.75rem;
+    }
+
+    h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: rgb(46, 92, 63);
+        margin-bottom: 0.5rem;
+    }
 }

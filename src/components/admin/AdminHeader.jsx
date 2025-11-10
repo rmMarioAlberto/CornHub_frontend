@@ -1,53 +1,35 @@
 // src/components/admin/AdminHeader.jsx
 import React from 'react';
 import Header from '../common/Header';
-import { Link } from 'react-router-dom';
+import Button from '../common/Button';
+import { useAuth } from '../../hooks/useAuth'; // Ajusta la ruta si es necesario
 
 /**
  * Header exclusivo del área de administración.
- * - Fondo negro (`bg-negro-texto`)
- * - Logo de 48 px (h-12) → mismo que en la captura
- * - Tres botones con <Button variant="primary"/>
+ * - Fondo negro (#1A1A1A) con texto blanco, sin borde ni sombra.
+ * - Logo de 48px (h-12).
+ * - Enlaces como navItems (coincide con la imagen/guía).
+ * - Botón de logout al final.
  */
 const AdminHeader = () => {
-  // Los “navItems” no se usan → se pasan vacíos
-  const navItems = [];
+  const { logout } = useAuth(); // Hook para manejar logout
 
-  // Los botones se renderizan dentro del propio Header usando el slot
-  // que ya tiene para un botón opcional.  Como necesitamos 3, los
-  // envolvemos en un <div> que Header mostrará después de los navItems.
-  const extraButtons = (
-    <div className="flex space-x-4">
-      <Link to="/admin/profile">
-        <button className="px-4 py-2 bg-verde-profundo text-white rounded-md font-poppins font-semibold hover:bg-verde-medio transition">
-          Mi Perfil
-        </button>
-      </Link>
-      <Link to="/admin/create-crop">
-        <button className="px-4 py-2 bg-verde-profundo text-white rounded-md font-poppins font-semibold hover:bg-verde-medio transition">
-          Crear Cultivo
-        </button>
-      </Link>
-      <Link to="/admin/users">
-        <button className="px-4 py-2 bg-verde-profundo text-white rounded-md font-poppins font-semibold hover:bg-verde-medio transition">
-          Usuarios
-        </button>
-      </Link>
-    </div>
-  );
+  const navItems = [
+    { label: 'Mi Perfil', link: '/admin/profile' },
+    { label: 'Crear Cultivos', link: '/admin/create-crop' }, // Ajustado a "Crear Cultivos" para legibilidad (imagen usa "CrearCultivos")
+    { label: 'Usuarios', link: '/admin/users' },
+  ];
 
   return (
     <Header
       navItems={navItems}
       logoSrc="/assets/images/lettucecirity-icono.png"
-      bgColor="bg-negro-texto text-white"
-      // Sobrescribimos el slot del botón único con nuestros 3 botones
-      buttonText={null}
-      buttonLink=""
-      // **Truco**: Header ya acepta children (no lo tenía).  Lo añadimos
-      // en el archivo common/Header.jsx (ver siguiente bloque).
+      bgColor="bg-[#1A1A1A] text-white border-none shadow-none" // Sobrescribe estilos para coincidir con imagen
     >
-      {extraButtons}
+      {/* Botón de logout como child, espaciado */}
+      <Button variant="tertiary" onClick={logout} className="ml-4">
+        Cerrar Sesión
+      </Button>
     </Header>
   );
 };

@@ -1,4 +1,4 @@
-// src/components/common/Header.jsx
+// src/components/common/Header.jsx (ligeros ajustes para reusabilidad)
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Button from './Button';
@@ -36,7 +36,7 @@ const Header = ({
             </Link>
           )}
 
-          {/* Aquí van los botones extra del admin */}
+          {/* Children para extras como logout en admin */}
           {children}
         </nav>
       </div>
