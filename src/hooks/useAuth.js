@@ -35,23 +35,33 @@ const useAuth = () => {
     setError(null);
 
     try {
-      const data = await login({ correo: email, contra: password });
-      // La respuesta actual del servidor devuelve sólo accessToken/refreshToken.
-      // En el futuro se espera que también devuelva `usuario` y `tipo_usuario`.
-      // Ejemplo esperado (futuro): { accessToken, usuario: { id: 1, nombre: 'x', tipo_usuario: 1 } }
-      const { accessToken, usuario } = data;
+      const raw = await login({ correo: email, contra: password });
+
+      // La API ahora puede devolver la carga útil dentro de `data`, por ejemplo:
+      // { statusCode, message, data: { accessToken, refreshToken, user } }
+      // Normalizamos para aceptar ambos formatos (antiguo y nuevo).
+      const payload = raw?.data ?? raw;
+
+      const accessToken = payload?.accessToken ?? null;
+      const refreshToken = payload?.refreshToken ?? null; // NO almacenar en localStorage
+
+      // El usuario puede venir bajo `user` o `usuario` (o no venir).
+      const userObj = payload?.user ?? payload?.usuario ?? null;
 
       // Guardar en el contexto — `user` puede ser null si el backend no lo retornó.
-      const user = usuario ?? null;
-      setAuth({ accessToken, user });
+      setAuth({ accessToken, user: userObj });
 
       // Guardar solo si existe el usuario en la respuesta
-      if (user) localStorage.setItem('user', JSON.stringify(user));
+      if (userObj) localStorage.setItem('user', JSON.stringify(userObj));
 
-      // Determinar ruta de redirección de forma segura.
-      // Usamos optional chaining para evitar "Cannot read properties of undefined"
-      // Si `usuario` no viene, por ahora redirigimos a '/farmer' por defecto.
-      const redirectPath = user?.tipo_usuario === 1 ? '/admin' : '/farmer';
+      // IMPORTANTE: por seguridad no guardamos `refreshToken` en localStorage.
+      // Lo ideal es que el servidor devuelva el refresh token como cookie httpOnly
+      // y que `fetch(..., credentials: 'include')` lo envíe automáticamente.
+      // Si el backend devuelve refreshToken en la respuesta JSON, evita almacenarlo
+      // en localStorage/sessionStorage para reducir el riesgo de XSS.
+
+      // Determinar ruta de redirección de forma segura. Si no hay user, redirigimos a '/farmer'.
+      const redirectPath = userObj?.tipo_usuario === 2 ? '/admin' : '/farmer'; // Por alguna razón registraron el 2 como admin
       navigate(redirectPath);
 
       /*
@@ -98,8 +108,9 @@ const useAuth = () => {
     setError(null);
 
     try {
-      const data = await refreshToken();
-      const { accessToken } = data;
+      const raw = await refreshToken();
+      const payload = raw?.data ?? raw;
+      const accessToken = payload?.accessToken ?? null;
 
       setAuth((prev) => ({
         ...prev,
