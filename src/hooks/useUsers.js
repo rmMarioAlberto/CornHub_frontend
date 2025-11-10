@@ -1,22 +1,22 @@
-// src/hooks/useCrops.js
+// src/hooks/useUsers.js
 import { useState, useEffect } from 'react';
 import { useAuth } from './useAuth';
-import { getAllCrops, getCropById } from '../api/crops';
+import { createUser, getAllUsers } from '../api/users';
 
-const useCrops = () => {
+const useUsers = () => {
   const { auth } = useAuth();
   const token = auth?.accessToken;
 
-  const [crops, setCrops] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchCrops = async () => {
+  const fetchUsers = async () => {
     if (!token) return;
     setLoading(true);
     try {
-      const data = await getAllCrops(token);
-      setCrops(data);
+      const data = await getAllUsers(token);
+      setUsers(data);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -24,11 +24,11 @@ const useCrops = () => {
     }
   };
 
-  const fetchCrop = async (id) => {
+  const addUser = async (userData) => {
     setLoading(true);
     try {
-      const data = await getCropById(id, token);
-      return data;
+      await createUser(userData, token);
+      await fetchUsers();
     } catch (err) {
       setError(err.message);
       throw err;
@@ -38,10 +38,10 @@ const useCrops = () => {
   };
 
   useEffect(() => {
-    fetchCrops();
+    fetchUsers();
   }, [token]);
 
-  return { crops, loading, error, fetchCrop, refresh: fetchCrops };
+  return { users, loading, error, addUser, refresh: fetchUsers };
 };
 
-export default useCrops;
+export default useUsers;

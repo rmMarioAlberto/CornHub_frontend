@@ -12,7 +12,8 @@ import AdminDashboard from '../pages/AdminDashboard';
 import IoTModuleSetup from '../pages/IoTModuleSetup';
 import CropManagement from '../pages/CropManagement';
 import FieldManagement from '../pages/FieldManagement';
-// import FarmerDashboard from '../pages/FarmerDashboard';
+import UserManagement from '../pages/UserManagement';
+import FarmerDashboard from '../pages/FarmerDashboard';
 // import FieldRegistration from '../pages/FieldRegistration';
 // import FieldDetails from '../pages/FieldDetails';
 // import Profile from '../pages/Profile';
@@ -37,15 +38,17 @@ const AppRoutes = () => {
         <Route path="/admin/iot" element={<IoTModuleSetup />} />
         <Route path="/admin/crops" element={<CropManagement />} />
         <Route path="/admin/fields" element={<FieldManagement />} />
+        <Route path="/admin/users" element={<UserManagement />} />
       </Route>
 
       {/* ====================== RUTAS FARMER (tipo_usuario = 1) ====================== */}
-      {/* <Route element={<ProtectedRoute allowedRoles={[1]} />}>
+      {/* <Route element={<ProtectedRoute allowedRoles={[1]} />}> */}
+      <Route>
         <Route path="/farmer" element={<FarmerDashboard />} />
-        <Route path="/create-field" element={<FieldRegistration />} />
+        {/* <Route path="/create-field" element={<FieldRegistration />} />
         <Route path="/field/:id" element={<FieldDetails />} />
-        <Route path="/profile" element={<Profile />} />
-      </Route> */}
+        <Route path="/profile" element={<Profile />} /> */}
+      </Route>
 
       {/* ====================== RUTA 404 ====================== */}
       {/* <Route path="*" element={<NotFound />} /> */}
