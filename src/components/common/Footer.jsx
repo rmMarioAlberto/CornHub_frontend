@@ -2,34 +2,42 @@ import React from 'react';
 
 const Footer = ({ links = [{ category: 'Resources', items: [{ label: 'Blog', href: '#' }, { label: 'Best practices', href: '#' }, { label: 'Colors', href: '#' }, { label: 'Color wheel', href: '#' }, { label: 'Support', href: '#' }, { label: 'Developers', href: '#' }, { label: 'Resource library', href: '#' }] }], logoSrc = '/assets/images/lettucecirity-icono.png' }) => {
   return (
-    <footer className="bg-white border-t border-gray-200 py-6">
-      <hr className="border-gray-300 mb-6" />
-      <div className="container grid grid-cols-4 gap-6">
-        {/* Columna 1: Logo */}
-        <div className="pt-4 pl-4">
-          <img src={logoSrc} alt="Logo Lettucecurity" className="w-full" />
-        </div>
+    <footer className="footer-main">
+      <div className="container-main">
+        <div className="quote-grid">
+          {/* Columna 1: Logo */}
+          <div className="flex items-center justify-center md:justify-start">
+            <img src={logoSrc} alt="Logo Lettucecurity" className="h-24 w-auto object-contain" />
+          </div>
 
-        {/* Columna 2: Enlaces */}
-        <div className="col-span-1 pl-1">
+          {/* Columnas 2-4: Enlaces */}
           {links.map((category, index) => (
             <div key={index}>
-              <h3 className="font-poppins font-bold mb-2">{category.category}</h3>
-              {category.items.map((item, itemIndex) => (
-                <a
-                  key={itemIndex}
-                  href={item.href}
-                  className="font-poppins block text-black mb-1 ml-4 no-underline hover:text-verde-brillante transition duration-200"
-                >
-                  {item.label}
-                </a>
-              ))}
+              <h3>{category.category}</h3>
+              <ul className="space-y-2">
+                {category.items.map((item, itemIndex) => (
+                  <li key={itemIndex}>
+                    <a
+                      href={item.href}
+                      className="footer-link"
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>
 
-        {/* Columnas 3 y 4: Espacio en blanco */}
-        <div className="col-span-2"></div>
+        <div className="divider"></div>
+
+        {/* Copyright */}
+        <div className="text-center">
+          <p className="text-sm text-gray-500">
+            © 2025 Lettucecurity. Todos los derechos reservados.
+          </p>
+        </div>
       </div>
     </footer>
   );

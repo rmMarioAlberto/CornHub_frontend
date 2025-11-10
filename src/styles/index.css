@@ -1,63 +1,45 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&display=swap');
 
+/* Tailwind v4: import as documented */
 @import "tailwindcss";
 
-/* Reset básico */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* Importar componentes centralizados (pueden usar @layer dentro si es necesario) */
+@import "./components.css";
 
-body {
-  font-family: 'Poppins', sans-serif;
-  color: #1A1A1A;
-  background-color: #F5F5F5;
-  line-height: 1.6;
-}
+/*
+  Colocamos los estilos globales dentro de la capa `base` de Tailwind.
+  De esta forma las utilidades (`.p-4`, `.mt-2`, etc.) y las clases
+  generadas por Tailwind (capa `utilities`) tendrán prioridad sobre
+  estas reglas base y no se verán sobrescritas por el reset global.
+*/
+@layer base {
+  /* CSS Reset y estilos base mínimos */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
-  color: #2E5C3F;
-}
+  body {
+    font-family: 'Poppins', sans-serif;
+    color: #1A1A1A;
+    background-color: #F5F5F5;
+    line-height: 1.6;
+  }
 
-p {
-  font-weight: 400;
-  margin-bottom: 1rem;
-}
-
-a {
-  color: #6DA544;
-  text-decoration: none;
-  transition: color 0.2s ease-in-out;
-}
-
-a:hover {
-  color: #6FA575;
-}
-
-/* Layout base */
-.container {
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-/* Card base (para estados de cultivo, alertas, etc.) */
-.card {
-  background-color: white;
-  border-radius: 0.5rem;
-  padding: 1.125rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  margin-bottom: 1rem;
-}
-
-/* Responsive design */
-@media (max-width: 640px) {
+  /* Contenedor Tailwind estándar */
   .container {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  @media (max-width: 640px) {
+    .container {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
   }
 }
