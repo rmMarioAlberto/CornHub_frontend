@@ -1,6 +1,6 @@
 // src/routes/index.jsx
 import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 
 // --- PÁGINAS PÚBLICAS ---
 import Home from '../pages/Home';
@@ -18,72 +18,14 @@ import AdminDashboard from '../pages/AdminDashboard';
 // import UserList from '../components/admin/UserList';
 
 /* -------------------------------------------------------------------------- */
-/*  ÍNDICE DE DESARROLLO EMBEBIDO (sin archivos extra)                       */
-/*  - Muestra lista de enlaces que abren cada vista en nueva pestaña         */
-/*  - Usa la paleta de colores y tipografía del proyecto (Lettucecurity)     */
-/*  - Totalmente temporal: elimínalo cuando termines                         */
-/* -------------------------------------------------------------------------- */
-const DevIndex = () => {
-  const views = [
-    { name: 'Home', path: '/home' },
-    { name: 'Login', path: '/login' },
-    { name: 'Register', path: '/register' },
-    { name: 'Admin Dashboard', path: '/admin' },
-    { name: 'Farmer Dashboard', path: '/farmer' },
-    { name: 'Crear Cultivo', path: '/create-field' },
-    { name: 'Detalle de Cultivo', path: '/field/123' },
-    { name: 'Configuración IoT', path: '/admin/iot' },
-    { name: 'Lista de Usuarios', path: '/admin/users' },
-    { name: 'Mi Perfil', path: '/profile' },
-    { name: '404 Not Found', path: '/ruta-inexistente' },
-  ];
-
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white py-12 px-6 font-sans">
-      <div className="max-w-4xl mx-auto">
-        {/* Encabezado UTEQ + Proyecto */}
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-[#2E5C3F] mb-2">Lettucecurity</h1>
-          <p className="text-lg text-gray-700">Índice de Vistas para Desarrollo</p>
-          <p className="text-sm text-gray-500 mt-2">
-            Haz clic en cualquier enlace → se abrirá en <strong>nueva pestaña</strong>
-          </p>
-        </div>
-
-        {/* Lista de vistas */}
-        <div className="grid gap-4 md:grid-cols-2">
-          {views.map((view) => (
-            <Link
-              key={view.path}
-              to={view.path}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block p-5 bg-white border-2 border-[#C3D18D] rounded-lg hover:border-[#6DA544] hover:shadow-md transition-all duration-200 text-center font-medium"
-            >
-              <span className="text-lg text-[#2E5C3F]">{view.name}</span>
-              <span className="block text-xs text-gray-500 mt-1">{view.path}</span>
-            </Link>
-          ))}
-        </div>
-
-        {/* Footer */}
-        <div className="mt-12 text-center text-sm text-gray-500">
-          <p>CP Killers © 2025 | Desarrollo frontend</p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/* -------------------------------------------------------------------------- */
 /*  RUTAS TEMPORALES PARA DESARROLLO                                          */
 /* -------------------------------------------------------------------------- */
 const AppRoutes = () => {
   return (
     <Routes>
 
-      {/* ====================== ÍNDICE DE DESARROLLO (raíz) ====================== */}
-      <Route path="/" element={<DevIndex />} />
+  {/* ====================== RUTA RAÍZ (usar Home por defecto) ====================== */}
+  <Route path="/" element={<Home />} />
 
       {/* ====================== RUTAS DIRECTAS (sin login) ====================== */}
       <Route path="/home" element={<Home />} />
