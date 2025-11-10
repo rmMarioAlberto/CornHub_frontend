@@ -1,7 +1,7 @@
 // src/components/common/ProtectedRoute.jsx
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '/src/hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth'; // Ruta corregida (asumiendo estructura estándar)
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const { auth } = useAuth();
@@ -13,7 +13,9 @@ const ProtectedRoute = ({ allowedRoles }) => {
 
   // Si el rol no está permitido, redirige según tipo
   if (!allowedRoles.includes(auth.user?.tipo_usuario)) {
-    const redirectPath = auth.user?.tipo_usuario === 1 ? '/admin' : '/farmer';
+    let redirectPath = '/farmer'; // Default para tipo 1 (farmer) o desconocido
+    if (auth.user?.tipo_usuario === 2) redirectPath = '/admin'; // Admin
+    if (auth.user?.tipo_usuario === 3) redirectPath = '/login'; // IoT no accede a rutas web; redirige a login
     return <Navigate to={redirectPath} replace />;
   }
 

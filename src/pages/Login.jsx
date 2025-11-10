@@ -17,6 +17,8 @@ const Login = () => {
     { label: 'Contacto', link: contactLink },
   ];
 
+  // Añadir redirección si ya se tiene iniciada la sesión
+
   const validateEmail = (value) => {
     // Simple RFC-like email regex (sufficient for basic validation)
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@\"]+\.)+[^<>()[\]\\.,;:\s@\"]{2,})$/i;
