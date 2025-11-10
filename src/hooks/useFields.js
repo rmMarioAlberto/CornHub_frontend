@@ -1,6 +1,6 @@
 // src/hooks/useFields.js
 import { useState, useEffect } from 'react';
-import { useAuth } from './useAuth';
+import useAuth from './useAuth';
 import { getAllFields, getUserFields, createField } from '../api/fields';
 
 const useFields = () => {

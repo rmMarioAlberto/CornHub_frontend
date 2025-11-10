@@ -1,6 +1,6 @@
 // src/hooks/useUsers.js
 import { useState, useEffect } from 'react';
-import { useAuth } from './useAuth';
+import useAuth from './useAuth';
 import { createUser, getAllUsers } from '../api/users';
 
 const useUsers = () => {

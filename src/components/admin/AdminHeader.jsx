@@ -2,7 +2,7 @@
 import React from 'react';
 import Header from '../common/Header';
 import Button from '../common/Button';
-import { useAuth } from '../../hooks/useAuth'; // Ajusta la ruta si es necesario
+import useAuth from '../../hooks/useAuth'; // Ajusta la ruta si es necesario
 
 /**
  * Header exclusivo del área de administración.

@@ -6,7 +6,7 @@ import Footer from '../components/common/Footer';
 import Button from '../components/common/Button';
 import { FaUser, FaLeaf, FaExclamationTriangle } from 'react-icons/fa';
 import { API_URL } from '../utils/env';
-import { useAuth } from '../hooks/useAuth';
+import useAuth from '../hooks/useAuth';
 
 const AdminDashboard = () => {
   const { auth } = useAuth();

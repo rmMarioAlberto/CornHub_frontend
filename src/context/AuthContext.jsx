@@ -5,34 +5,44 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(() => {
     const savedUser = localStorage.getItem('user');
-    return savedUser ? { user: JSON.parse(savedUser), accessToken: null } : { user: null, accessToken: null };
+    const savedToken = localStorage.getItem('accessToken');
+    return {
+      user: savedUser ? JSON.parse(savedUser) : null,
+      accessToken: savedToken || null,
+    };
   });
 
-  // Actualizar el contexto cuando el estado cambia
+  // Función para actualizar auth con merge y sincronizar localStorage
   const updateAuth = (newAuth) => {
     setAuth((prev) => {
-      const updatedAuth = { ...prev, ...newAuth };
-      if (newAuth.user) {
-        localStorage.setItem('user', JSON.stringify(newAuth.user));
-      } else if (newAuth.user === null) {
-        localStorage.removeItem('user');
+      const updated = { ...prev, ...newAuth };
+      if (newAuth.user !== undefined) {
+        if (newAuth.user) {
+          localStorage.setItem('user', JSON.stringify(newAuth.user));
+        } else {
+          localStorage.removeItem('user');
+        }
       }
-      return updatedAuth;
+      if (newAuth.accessToken !== undefined) {
+        if (newAuth.accessToken) {
+          localStorage.setItem('accessToken', newAuth.accessToken);
+        } else {
+          localStorage.removeItem('accessToken');
+        }
+      }
+      return updated;
     });
   };
 
-  // Efecto para limpiar localStorage si el usuario se desconecta manualmente
+  // Cleanup: Remover si user es null (accessToken ya se maneja en updateAuth)
   useEffect(() => {
     return () => {
-      if (!auth.user) {
-        localStorage.removeItem('user');
-      }
+      if (!auth.user) localStorage.removeItem('user');
+      if (!auth.accessToken) localStorage.removeItem('accessToken');
     };
-  }, [auth.user]);
+  }, [auth]);
 
   return (
-    // Exponer tanto el estado `auth`, la función `updateAuth` (merge + localStorage)
-    // y el setter directo `setAuth` para compatibilidad con consumidores existentes.
     <AuthContext.Provider value={{ auth, updateAuth, setAuth }}>
       {children}
     </AuthContext.Provider>

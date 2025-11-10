@@ -1,52 +1,20 @@
 // src/api/auth.js
-import { API_URL } from '../utils/env'; // Importa desde utils
+import { api } from './apiClient'; // Importa el cliente centralizado
 
 export const register = async (userData) => {
-  const response = await fetch(`${API_URL}/auth/register`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(userData),
-    credentials: 'include', // Permitir cookies
-  });
-  if (!response.ok) throw new Error((await response.json()).message || 'Error al registrar');
-  return response.json();
+  return api.post('/auth/register', userData);
 };
 
 export const login = async (credentials) => {
-  const response = await fetch(`${API_URL}/auth/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(credentials),
-    credentials: 'include', // Permitir cookies
-  });
-  if (!response.ok) throw new Error((await response.json()).message || 'Error al iniciar sesión');
-  return response.json();
+  return api.post('/auth/login', credentials);
 };
 
 export const logout = async () => {
-  const response = await fetch(`${API_URL}/auth/logout`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include', // Enviar cookies
-  });
-  if (!response.ok) throw new Error((await response.json()).message || 'Error al cerrar sesión');
-  return response.json();
+  return api.post('/auth/logout');
 };
 
 export const refreshToken = async () => {
-  const response = await fetch(`${API_URL}/auth/refresh-token`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include', // Enviar cookies
-  });
-  if (!response.ok) throw new Error((await response.json()).message || 'Error al refrescar token');
-  return response.json();
+  // Nota: No usar directamente; apiClient lo maneja internamente.
+  // Si necesitas llamar manualmente, usa api.post('/auth/refresh-token');
+  return api.post('/auth/refresh-token');
 };

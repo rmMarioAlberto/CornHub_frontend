@@ -1,6 +1,6 @@
 // src/hooks/useIoTModules.js
 import { useState, useEffect } from 'react';
-import { useAuth } from './useAuth';
+import useAuth from './useAuth';
 import { createIot, getAllIot, deleteIot, assignToParcela, getFreeIots } from '../api/iot';
 
 const useIoTModules = () => {

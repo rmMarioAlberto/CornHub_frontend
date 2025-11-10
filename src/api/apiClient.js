@@ -12,29 +12,37 @@ class ApiClient {
   }
 
   async ensureToken() {
-    const token = this.getToken();
+    let token = this.getToken();
     if (token) return token;
 
     if (!this.refreshing) {
       this.refreshing = this._refreshToken();
     }
-    return await this.refreshing;
+    try {
+      token = await this.refreshing;
+    } catch (err) {
+      throw err; // Deja que el caller maneje (e.g., logout)
+    }
+    return token;
   }
 
   async _refreshToken() {
     try {
-      const res = await fetch(`${API_URL}/auth/refresh-token`, {
+      const res = await fetch(`${this.baseURL}/auth/refresh-token`, {
         method: 'POST',
         credentials: 'include',
       });
-      if (!res.ok) throw new Error('Refresh failed');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || 'Refresh failed');
+      }
       const { accessToken } = await res.json();
+      if (!accessToken) throw new Error('No access token in response');
       localStorage.setItem('accessToken', accessToken);
       return accessToken;
-    } catch {
-      localStorage.clear();
-      window.location.href = '/login';
-      throw new Error('Sesión expirada');
+    } catch (err) {
+      localStorage.removeItem('accessToken');
+      throw err; // No redirigir aquí; caller maneja
     } finally {
       this.refreshing = null;
     }
@@ -48,7 +56,7 @@ class ApiClient {
       credentials: 'include',
     };
 
-    const token = await this.ensureToken();
+    const token = await this.ensureToken().catch(() => null);
     if (token) config.headers['Authorization'] = `Bearer ${token}`;
 
     let res = await fetch(url, config);
@@ -59,18 +67,22 @@ class ApiClient {
     }
 
     if (!res.ok) {
-      let msg = 'Error';
-      try { const err = await res.json(); msg = err.message || msg; } catch {}
-      throw new Error(msg);
+      let errData;
+      try {
+        errData = await res.json();
+      } catch {
+        errData = {};
+      }
+      throw new Error(errData.message || `Error ${res.status}`);
     }
 
     return res.json();
   }
 
-  get = (e) => this.request(e, { method: 'GET' });
-  post = (e, d) => this.request(e, { method: 'POST', body: JSON.stringify(d) });
-  put = (e, d) => this.request(e, { method: 'PUT', body: JSON.stringify(d) });
-  delete = (e) => this.request(e, { method: 'DELETE' });
+  get = (endpoint) => this.request(endpoint, { method: 'GET' });
+  post = (endpoint, data) => this.request(endpoint, { method: 'POST', body: JSON.stringify(data) });
+  put = (endpoint, data) => this.request(endpoint, { method: 'PUT', body: JSON.stringify(data) });
+  delete = (endpoint) => this.request(endpoint, { method: 'DELETE' });
 }
 
 export const api = new ApiClient();

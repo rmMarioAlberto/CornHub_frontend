@@ -1,7 +1,6 @@
 // src/pages/Login.jsx
 import React, { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import useAuth from '../hooks/useAuth';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
 import Input from '../components/common/Input';
@@ -18,16 +17,15 @@ const Login = () => {
 
   const navItems = [{ label: 'Contacto', link: contactLink }];
 
-  // REDIRECCIÓN SI YA HAY SESIÓN
+  // Redirección si autenticado
   useEffect(() => {
-    if (auth?.accessToken && auth.user?.tipo_usuario) {
+    if (auth?.accessToken && auth?.user?.tipo_usuario) {
       const path = auth.user.tipo_usuario === 2 ? '/admin' : '/farmer';
-      window.location.replace(path); // Evita volver atrás
+      window.location.replace(path);
     }
   }, [auth]);
 
-  // Si ya está autenticado → no renderizar nada
-  if (auth?.accessToken) return null;
+  if (auth?.accessToken && auth?.user) return null;
 
   const validateEmail = (value) => {
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@\"]+\.)+[^<>()[\]\\.,;:\s@\"]{2,})$/i;

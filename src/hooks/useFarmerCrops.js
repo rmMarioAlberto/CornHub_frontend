@@ -1,6 +1,6 @@
 // src/hooks/useFarmerCrops.js
 import { useState, useEffect } from 'react';
-import { useAuth } from './useAuth';
+import useAuth from './useAuth';
 import { getAllCrops } from '../api/crops';
 
 const useFarmerCrops = () => {
