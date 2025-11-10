@@ -133,6 +133,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* Botones de acción */}
+          {/* Botones de acción */}
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button variant="primary" as={Link} to="/admin/users">
               Gestionar Usuarios
@@ -140,8 +141,11 @@ const AdminDashboard = () => {
             <Button variant="primary" as={Link} to="/admin/iot">
               Gestionar IoT
             </Button>
-            <Button variant="primary" as={Link} to="/admin/create-crop">
-              Crear Cultivo
+            <Button variant="primary" as={Link} to="/admin/crops">
+              Gestionar Cultivos
+            </Button>
+            <Button variant="primary" as={Link} to="/admin/fields">
+              Gestionar Parcelas
             </Button>
           </div>
         </div>
