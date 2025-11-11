@@ -1,3 +1,4 @@
+// src/hooks/useAuth.js
 import { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
@@ -30,10 +31,18 @@ const useAuth = () => {
     try {
       const raw = await login({ correo: email, contra: password });
       const payload = raw?.data ?? raw;
+
       const accessToken = payload?.accessToken ?? null;
+      const refreshToken = payload?.refreshToken ?? null;
       const userObj = payload?.user ?? payload?.usuario ?? null;
 
       updateAuth({ accessToken, user: userObj });
+
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+        console.log('refreshToken guardado:', refreshToken);
+      }
+
       const redirectPath = userObj?.tipo_usuario === 2 ? '/admin' : '/farmer';
       navigate(redirectPath);
     } catch (err) {
@@ -49,6 +58,7 @@ const useAuth = () => {
     try {
       await logout();
       updateAuth({ user: null, accessToken: null });
+      localStorage.removeItem('refreshToken');
       navigate('/login');
     } catch (err) {
       setError(err.message);
@@ -67,20 +77,27 @@ const useAuth = () => {
       updateAuth({ accessToken });
     } catch (err) {
       setError(err.message);
-      await logoutUser(); // Forzar logout si falla
+      await logoutUser();
     } finally {
       setLoading(false);
     }
   };
 
-  // Interval para refresh automático si hay token
   useEffect(() => {
     let interval;
     if (auth?.accessToken) {
-      interval = setInterval(refreshAuthToken, 12 * 60 * 1000); // Cada 12 min
+      interval = setInterval(refreshAuthToken, 12 * 60 * 1000);
     }
     return () => clearInterval(interval);
   }, [auth?.accessToken]);
+
+  // === LIMPIAR TOKENS AL CARGAR /login ===
+  useEffect(() => {
+    if (window.location.pathname === '/login') {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+    }
+  }, []);
 
   return {
     auth,

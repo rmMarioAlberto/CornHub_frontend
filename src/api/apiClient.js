@@ -11,6 +11,27 @@ class ApiClient {
     return localStorage.getItem('accessToken');
   }
 
+  getRefreshToken() {
+    return localStorage.getItem('refreshToken');
+  }
+
+  setTokens(accessToken, refreshToken) {
+    localStorage.setItem('accessToken', accessToken);
+    if (refreshToken) {
+      localStorage.setItem('refreshToken', refreshToken);
+    }
+  }
+
+  clearTokens() {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+  }
+
+  redirectToLogin() {
+    this.clearTokens();
+    window.location.replace('/login');
+  }
+
   async ensureToken() {
     let token = this.getToken();
     if (token) return token;
@@ -21,28 +42,52 @@ class ApiClient {
     try {
       token = await this.refreshing;
     } catch (err) {
-      throw err; // Deja que el caller maneje (e.g., logout)
+      this.redirectToLogin();
+      throw err;
     }
     return token;
   }
 
   async _refreshToken() {
+    const refreshToken = this.getRefreshToken();
+
+    if (!refreshToken) {
+      console.warn('No refresh token available - redirecting to login');
+      this.redirectToLogin();
+      throw new Error('No refresh token available');
+    }
+
     try {
-      const res = await fetch(`${this.baseURL}/auth/refresh-token`, {
-        method: 'POST',
+      const res = await fetch(`${this.baseURL}/auth/refreshToken`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${refreshToken}`,
+          'Content-Type': 'application/json',
+        },
         credentials: 'include',
       });
+
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
+        console.error('Refresh failed:', errData.message);
+        this.redirectToLogin();
         throw new Error(errData.message || 'Refresh failed');
       }
-      const { accessToken } = await res.json();
-      if (!accessToken) throw new Error('No access token in response');
-      localStorage.setItem('accessToken', accessToken);
+
+      const { accessToken, refreshToken: newRefreshToken } = await res.json();
+
+      if (!accessToken) {
+        this.redirectToLogin();
+        throw new Error('No access token in response');
+      }
+
+      this.setTokens(accessToken, newRefreshToken || refreshToken);
+
+      console.log('Token refreshed successfully');
       return accessToken;
     } catch (err) {
-      localStorage.removeItem('accessToken');
-      throw err; // No redirigir aquí; caller maneja
+      this.redirectToLogin();
+      throw err;
     } finally {
       this.refreshing = null;
     }
@@ -56,14 +101,35 @@ class ApiClient {
       credentials: 'include',
     };
 
-    const token = await this.ensureToken().catch(() => null);
-    if (token) config.headers['Authorization'] = `Bearer ${token}`;
+    // === EXCLUIR RUTAS PÚBLICAS DEL ensureToken() ===
+    const publicEndpoints = [
+      '/auth/login',
+      '/auth/register',
+      '/auth/refreshToken'
+    ];
+    const isPublic = publicEndpoints.some(path => endpoint.startsWith(path));
+
+    if (!isPublic) {
+      const token = await this.ensureToken().catch(() => {
+        this.redirectToLogin();
+        return null;
+      });
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+      }
+    }
 
     let res = await fetch(url, config);
 
-    if (res.status === 401 && !options._retry) {
-      await this._refreshToken();
-      return this.request(endpoint, { ...options, _retry: true });
+    if (res.status === 401 && !options._retry && !endpoint.includes('refreshToken')) {
+      console.log(`Refreshing token for ${endpoint}`);
+      try {
+        await this._refreshToken();
+        return this.request(endpoint, { ...options, _retry: true });
+      } catch (err) {
+        this.redirectToLogin();
+        throw err;
+      }
     }
 
     if (!res.ok) {

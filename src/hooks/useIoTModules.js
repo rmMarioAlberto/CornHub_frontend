@@ -1,12 +1,8 @@
 // src/hooks/useIoTModules.js
 import { useState, useEffect } from 'react';
-import useAuth from './useAuth';
 import { createIot, getAllIot, deleteIot, assignToParcela, getFreeIots } from '../api/iot';
 
 const useIoTModules = () => {
-  const { auth } = useAuth();
-  const accessToken = auth?.accessToken;
-
   const [iots, setIots] = useState([]);
   const [freeIots, setFreeIots] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -16,7 +12,7 @@ const useIoTModules = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getAllIot(accessToken);
+      const data = await getAllIot();
       setIots(data);
     } catch (err) {
       setError(err.message);
@@ -29,7 +25,7 @@ const useIoTModules = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getFreeIots(accessToken);
+      const data = await getFreeIots();
       setFreeIots(data);
     } catch (err) {
       setError(err.message);
@@ -42,8 +38,8 @@ const useIoTModules = () => {
     setLoading(true);
     setError(null);
     try {
-      await createIot(data, accessToken);
-      await fetchAllIot(); // Refetch
+      await createIot(data);
+      await fetchAllIot();
     } catch (err) {
       setError(err.message);
       throw err;
@@ -56,8 +52,8 @@ const useIoTModules = () => {
     setLoading(true);
     setError(null);
     try {
-      await deleteIot(idIot, accessToken);
-      await fetchAllIot(); // Refetch
+      await deleteIot(idIot);
+      await fetchAllIot();
     } catch (err) {
       setError(err.message);
       throw err;
@@ -70,8 +66,8 @@ const useIoTModules = () => {
     setLoading(true);
     setError(null);
     try {
-      await assignToParcela(idIot, idParcela, accessToken);
-      await fetchAllIot(); // Refetch
+      await assignToParcela(idIot, idParcela);
+      await fetchAllIot();
       await fetchFreeIots();
     } catch (err) {
       setError(err.message);
@@ -82,13 +78,22 @@ const useIoTModules = () => {
   };
 
   useEffect(() => {
-    if (accessToken) {
-      fetchAllIot();
-      fetchFreeIots();
-    }
-  }, [accessToken]);
+    const load = async () => {
+      await Promise.all([fetchAllIot(), fetchFreeIots()]);
+    };
+    load();
+  }, []);
 
-  return { iots, freeIots, loading, error, createNewIot, removeIot, assignIotToParcela, refresh: fetchAllIot };
+  return {
+    iots,
+    freeIots,
+    loading,
+    error,
+    createNewIot,
+    removeIot,
+    assignIotToParcela,
+    refresh: fetchAllIot,
+  };
 };
 
 export default useIoTModules;

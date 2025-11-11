@@ -5,7 +5,6 @@ import { getAllFields, getUserFields, createField } from '../api/fields';
 
 const useFields = () => {
   const { auth } = useAuth();
-  const token = auth?.accessToken;
   const isAdmin = auth?.user?.tipo_usuario === 2;
 
   const [fields, setFields] = useState([]);
@@ -13,13 +12,12 @@ const useFields = () => {
   const [error, setError] = useState(null);
 
   const fetchFields = async () => {
-    if (!token) return;
     setLoading(true);
+    setError(null);
     try {
-      const raw = isAdmin ? await getAllFields(token) : await getUserFields(token);
+      const raw = isAdmin ? await getAllFields() : await getUserFields();
       const parcelas = raw?.parcelas || raw || [];
 
-      // Mapeo seguro: garantiza id_parcela
       const mapped = parcelas.map(p => ({
         id_parcela: p.id_parcela || p.idParcela,
         nombre: p.nombre || 'Sin nombre',
@@ -41,8 +39,9 @@ const useFields = () => {
 
   const createNewField = async (data) => {
     setLoading(true);
+    setError(null);
     try {
-      await createField(data, token);
+      await createField(data);
       await fetchFields();
     } catch (err) {
       setError(err.message);
@@ -53,8 +52,10 @@ const useFields = () => {
   };
 
   useEffect(() => {
-    fetchFields();
-  }, [token, isAdmin]);
+    if (auth?.accessToken) {
+      fetchFields();
+    }
+  }, [auth?.accessToken, isAdmin]);
 
   return { fields, loading, error, createNewField, refresh: fetchFields };
 };

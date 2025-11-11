@@ -1,21 +1,17 @@
 // src/hooks/useUsers.js
 import { useState, useEffect } from 'react';
-import useAuth from './useAuth';
 import { createUser, getAllUsers } from '../api/users';
 
 const useUsers = () => {
-  const { auth } = useAuth();
-  const token = auth?.accessToken;
-
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchUsers = async () => {
-    if (!token) return;
     setLoading(true);
+    setError(null);
     try {
-      const data = await getAllUsers(token);
+      const data = await getAllUsers();
       setUsers(data);
     } catch (err) {
       setError(err.message);
@@ -26,8 +22,9 @@ const useUsers = () => {
 
   const addUser = async (userData) => {
     setLoading(true);
+    setError(null);
     try {
-      await createUser(userData, token);
+      await createUser(userData);
       await fetchUsers();
     } catch (err) {
       setError(err.message);
@@ -39,7 +36,7 @@ const useUsers = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, [token]);
+  }, []);
 
   return { users, loading, error, addUser, refresh: fetchUsers };
 };
