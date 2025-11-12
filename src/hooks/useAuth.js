@@ -40,7 +40,6 @@ const useAuth = () => {
 
       if (refreshToken) {
         localStorage.setItem('refreshToken', refreshToken);
-        console.log('refreshToken guardado:', refreshToken);
       }
 
       const redirectPath = userObj?.tipo_usuario === 2 ? '/admin' : '/farmer';

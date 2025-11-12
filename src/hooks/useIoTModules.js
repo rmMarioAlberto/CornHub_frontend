@@ -12,10 +12,13 @@ const useIoTModules = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getAllIot();
+      const response = await getAllIot();
+      // Aseguramos que siempre sea un array
+      const data = Array.isArray(response) ? response : (response?.data || []);
       setIots(data);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Error al cargar módulos IoT');
+      setIots([]); // Fallback seguro
     } finally {
       setLoading(false);
     }
@@ -25,10 +28,12 @@ const useIoTModules = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getFreeIots();
+      const response = await getFreeIots();
+      const data = Array.isArray(response) ? response : (response?.data || []);
       setFreeIots(data);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Error al cargar IoTs libres');
+      setFreeIots([]);
     } finally {
       setLoading(false);
     }
@@ -40,8 +45,9 @@ const useIoTModules = () => {
     try {
       await createIot(data);
       await fetchAllIot();
+      await fetchFreeIots(); // Actualiza también los libres
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Error al crear módulo IoT');
       throw err;
     } finally {
       setLoading(false);
@@ -54,8 +60,9 @@ const useIoTModules = () => {
     try {
       await deleteIot(idIot);
       await fetchAllIot();
+      await fetchFreeIots();
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Error al eliminar módulo IoT');
       throw err;
     } finally {
       setLoading(false);
@@ -70,7 +77,7 @@ const useIoTModules = () => {
       await fetchAllIot();
       await fetchFreeIots();
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Error al asignar módulo a parcela');
       throw err;
     } finally {
       setLoading(false);
@@ -93,6 +100,7 @@ const useIoTModules = () => {
     removeIot,
     assignIotToParcela,
     refresh: fetchAllIot,
+    refreshFree: fetchFreeIots,
   };
 };
 
