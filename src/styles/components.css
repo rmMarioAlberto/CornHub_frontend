@@ -2,6 +2,10 @@
 
 @layer components {
 
+    .bg-verde-lima-claro {
+        background-color: "#C3D18D";
+    }
+
     /* Botones */
     .btn-primary {
         display: inline-block;

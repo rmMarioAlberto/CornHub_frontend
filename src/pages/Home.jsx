@@ -23,7 +23,7 @@ const Home = () => {
         navItems={navItems}
         buttonText="Inicia Sesión"
         buttonLink="/login"
-        bgColor="verde-lima-claro"
+        bgColor="bg-verde-lima-claro"
       />
       <main className="container flex-grow">
         {/* Hero Section with Background Image */}
@@ -31,7 +31,8 @@ const Home = () => {
           className="relative bg-cover bg-center h-96 mb-8"
           style={{ backgroundImage: "url('/assets/images/home.jpg')" }}
         >
-          <div className="absolute inset-0 bg-white opacity-40"></div>
+          <div className="absolute inset-0 bg-white opacity-30"></div>
+          {/* <div className="hero-overlay bg-black opacity-50" /> */}
           <div className="relative flex items-center justify-center h-full">
             <div className="text-center z-10">
               <h1 className="text-4xl font-poppins font-semibold text-verde-profundo mb-4">Lettucecurity</h1>
