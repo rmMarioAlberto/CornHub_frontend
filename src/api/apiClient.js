@@ -101,7 +101,7 @@ class ApiClient {
       credentials: 'include',
     };
 
-    // === EXCLUIR RUTAS PÚBLICAS DEL ensureToken() ===
+    // === RUTAS PÚBLICAS: NO requieren token ni refresh ===
     const publicEndpoints = [
       '/auth/login',
       '/auth/register',
@@ -121,8 +121,22 @@ class ApiClient {
 
     let res = await fetch(url, config);
 
-    if (res.status === 401 && !options._retry && !endpoint.includes('refreshToken')) {
-      console.log(`Refreshing token for ${endpoint}`);
+    // === MANEJO DE 401 ===
+    if (res.status === 401 && !options._retry) {
+      // Si es login o register → NO intentar refresh, solo devolver error
+      if (endpoint.startsWith('/auth/login') || endpoint.startsWith('/auth/register')) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || 'Credenciales inválidas');
+      }
+
+      // Si es refreshToken fallido → redirigir
+      if (endpoint.includes('refreshToken')) {
+        this.redirectToLogin();
+        throw new Error('Sesión expirada');
+      }
+
+      // Para cualquier otra ruta protegida → intentar refresh
+      console.log(`Token expired on ${endpoint}, attempting refresh...`);
       try {
         await this._refreshToken();
         return this.request(endpoint, { ...options, _retry: true });
@@ -132,6 +146,7 @@ class ApiClient {
       }
     }
 
+    // === ERRORES GENERALES ===
     if (!res.ok) {
       let errData;
       try {
