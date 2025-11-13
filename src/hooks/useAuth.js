@@ -5,11 +5,12 @@ import AuthContext from '../context/AuthContext';
 import { login, logout, refreshToken, register } from '../api/auth';
 
 const useAuth = () => {
-  const { auth, updateAuth } = useContext(AuthContext);
+  const { auth, updateAuth, loading: contextLoading } = useContext(AuthContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // === REGISTER ===
   const registerUser = async (userData) => {
     setLoading(true);
     setError(null);
@@ -25,6 +26,7 @@ const useAuth = () => {
     }
   };
 
+  // === LOGIN ===
   const loginUser = async (email, password) => {
     setLoading(true);
     setError(null);
@@ -36,14 +38,10 @@ const useAuth = () => {
       const refreshToken = payload?.refreshToken ?? null;
       const userObj = payload?.user ?? payload?.usuario ?? null;
 
-      updateAuth({ accessToken, user: userObj });
-
-      if (refreshToken) {
-        localStorage.setItem('refreshToken', refreshToken);
-      }
+      updateAuth({ accessToken, refreshToken, user: userObj });
 
       const redirectPath = userObj?.tipo_usuario === 2 ? '/admin' : '/farmer';
-      navigate(redirectPath);
+      navigate(redirectPath, { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -51,14 +49,14 @@ const useAuth = () => {
     }
   };
 
+  // === LOGOUT ===
   const logoutUser = async () => {
     setLoading(true);
     setError(null);
     try {
       await logout();
-      updateAuth({ user: null, accessToken: null });
-      localStorage.removeItem('refreshToken');
-      navigate('/login');
+      updateAuth({ user: null, accessToken: null, refreshToken: null });
+      navigate('/login', { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -66,6 +64,7 @@ const useAuth = () => {
     }
   };
 
+  // === REFRESH TOKEN ===
   const refreshAuthToken = async () => {
     setLoading(true);
     setError(null);
@@ -82,30 +81,30 @@ const useAuth = () => {
     }
   };
 
+  // === Auto-refresh cada 12 minutos (si hay token) ===
   useEffect(() => {
-    let interval;
-    if (auth?.accessToken) {
-      interval = setInterval(refreshAuthToken, 12 * 60 * 1000);
-    }
+    if (!auth?.accessToken) return;
+
+    const interval = setInterval(refreshAuthToken, 12 * 60 * 1000);
     return () => clearInterval(interval);
   }, [auth?.accessToken]);
 
-  // === LIMPIAR TOKENS AL CARGAR /login ===
+  // === Limpiar tokens al entrar a /login ===
   useEffect(() => {
     if (window.location.pathname === '/login') {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      updateAuth({ accessToken: null, refreshToken: null, user: null });
     }
   }, []);
 
   return {
     auth,
+    updateAuth,
+    loading: loading || contextLoading,
+    error,
     registerUser,
     loginUser,
     logoutUser,
     refreshAuthToken,
-    loading,
-    error,
   };
 };
 

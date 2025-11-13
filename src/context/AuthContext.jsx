@@ -1,49 +1,64 @@
-import React, { createContext, useState, useEffect } from 'react';
+// src/context/AuthContext.jsx
+import React, { createContext, useState, useEffect, useCallback } from 'react';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [auth, setAuth] = useState(() => {
-    const savedUser = localStorage.getItem('user');
-    const savedToken = localStorage.getItem('accessToken');
-    return {
-      user: savedUser ? JSON.parse(savedUser) : null,
-      accessToken: savedToken || null,
-    };
-  });
+  const [auth, setAuth] = useState({ user: null, accessToken: null });
+  const [loading, setLoading] = useState(true); // ← Estado de carga inicial
 
-  // Función para actualizar auth con merge y sincronizar localStorage
-  const updateAuth = (newAuth) => {
+  // Carga inicial desde localStorage (una sola vez)
+  useEffect(() => {
+    const loadAuth = () => {
+      try {
+        const token = localStorage.getItem('accessToken');
+        const user = localStorage.getItem('user');
+        const refreshToken = localStorage.getItem('refreshToken');
+
+        setAuth({
+          accessToken: token || null,
+          user: user ? JSON.parse(user) : null,
+          refreshToken: refreshToken || null,
+        });
+      } catch (err) {
+        console.error('Error loading auth from storage', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAuth();
+  }, []);
+
+  // updateAuth: mergea y sincroniza con localStorage
+  const updateAuth = useCallback((newData) => {
     setAuth((prev) => {
-      const updated = { ...prev, ...newAuth };
-      if (newAuth.user !== undefined) {
-        if (newAuth.user) {
-          localStorage.setItem('user', JSON.stringify(newAuth.user));
-        } else {
-          localStorage.removeItem('user');
-        }
+      const updated = { ...prev, ...newData };
+
+      if (newData.accessToken !== undefined) {
+        newData.accessToken
+          ? localStorage.setItem('accessToken', newData.accessToken)
+          : localStorage.removeItem('accessToken');
       }
-      if (newAuth.accessToken !== undefined) {
-        if (newAuth.accessToken) {
-          localStorage.setItem('accessToken', newAuth.accessToken);
-        } else {
-          localStorage.removeItem('accessToken');
-        }
+
+      if (newData.user !== undefined) {
+        newData.user
+          ? localStorage.setItem('user', JSON.stringify(newData.user))
+          : localStorage.removeItem('user');
       }
+
+      if (newData.refreshToken !== undefined) {
+        newData.refreshToken
+          ? localStorage.setItem('refreshToken', newData.refreshToken)
+          : localStorage.removeItem('refreshToken');
+      }
+
       return updated;
     });
-  };
-
-  // Cleanup: Remover si user es null (accessToken ya se maneja en updateAuth)
-  useEffect(() => {
-    return () => {
-      if (!auth.user) localStorage.removeItem('user');
-      if (!auth.accessToken) localStorage.removeItem('accessToken');
-    };
-  }, [auth]);
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ auth, updateAuth, setAuth }}>
+    <AuthContext.Provider value={{ auth, updateAuth, loading }}>
       {children}
     </AuthContext.Provider>
   );

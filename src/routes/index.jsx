@@ -31,8 +31,7 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
 
       {/* ====================== RUTAS ADMIN (tipo_usuario = 2) ====================== */}
-      {/* <Route element={<ProtectedRoute allowedRoles={[2]} />}> */}
-      <Route>
+      <Route element={<ProtectedRoute allowedRoles={[2]} />}>
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/iot" element={<IoTModuleSetup />} />
         <Route path="/admin/fields" element={<FieldManagement />} />
@@ -40,8 +39,7 @@ const AppRoutes = () => {
       </Route>
 
       {/* ====================== RUTAS FARMER (tipo_usuario = 1) ====================== */}
-      {/* <Route element={<ProtectedRoute allowedRoles={[1]} />}> */}
-      <Route>
+      <Route element={<ProtectedRoute allowedRoles={[1]} />}>
         <Route path="/farmer" element={<FarmerDashboard />} />
         {/* <Route path="/create-field" element={<FieldRegistration />} />
         <Route path="/field/:id" element={<FieldDetails />} />
