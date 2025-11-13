@@ -1,13 +1,17 @@
-import React from 'react';
+// src/pages/Home.jsx
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import useAuth from '../hooks/useAuth';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
 
 const Home = () => {
+  const { auth } = useAuth();
+  const navigate = useNavigate();
+
   const contactLink = "https://api.whatsapp.com/send?phone=+527121924905&text=Hola,%20estoy%20interesado%20en%20contratar%20tus%20servicios%20para%20monitoreo%20de%20cultivos.";
 
   const navItems = [
-    // { label: 'Mi perfil', link: '/profile' },
-    // { label: 'Mis cultivos', link: '/cultivos' },
     { label: 'Contacto', link: contactLink },
   ];
 
@@ -16,6 +20,19 @@ const Home = () => {
     { id: 2, title: 'Quote 2', description: 'Description 2', image: '/assets/images/quote1.png' },
     { id: 3, title: 'Quote 3', description: 'Description 3', image: '/assets/images/quote1.png' },
   ];
+
+  // === REDIRECCIÓN SI YA ESTÁ AUTENTICADO ===
+  useEffect(() => {
+    if (auth?.accessToken && auth?.user?.tipo_usuario) {
+      const path = auth.user.tipo_usuario === 2 ? '/admin' : '/farmer';
+      navigate(path, { replace: true });
+    }
+  }, [auth, navigate]);
+
+  // Evitar render si ya está autenticado
+  if (auth?.accessToken && auth?.user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -32,7 +49,6 @@ const Home = () => {
           style={{ backgroundImage: "url('/assets/images/home.jpg')" }}
         >
           <div className="absolute inset-0 bg-white opacity-30"></div>
-          {/* <div className="hero-overlay bg-black opacity-50" /> */}
           <div className="relative flex items-center justify-center h-full">
             <div className="text-center z-10">
               <h1 className="text-4xl font-poppins font-semibold text-verde-profundo mb-4">Lettucecurity</h1>

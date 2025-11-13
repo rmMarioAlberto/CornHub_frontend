@@ -1,5 +1,6 @@
 // src/pages/Login.jsx
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
@@ -8,24 +9,27 @@ import Button from '../components/common/Button';
 
 const Login = () => {
   const { auth, loginUser, loading, error } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [formErrors, setFormErrors] = useState({});
   const [touched, setTouched] = useState({ email: false, password: false });
 
   const contactLink = "https://api.whatsapp.com/send?phone=+527121924905&text=Hola,%20estoy%20interesado%20en%20contratar%20tus%20servicios%20para%20monitoreo%20de%20cultivos.";
-
   const navItems = [{ label: 'Contacto', link: contactLink }];
 
-  // Redirección si autenticado
+  // === REDIRECCIÓN SI YA ESTÁ AUTENTICADO ===
   useEffect(() => {
     if (auth?.accessToken && auth?.user?.tipo_usuario) {
       const path = auth.user.tipo_usuario === 2 ? '/admin' : '/farmer';
-      window.location.replace(path);
+      navigate(path, { replace: true });
     }
-  }, [auth]);
+  }, [auth, navigate]);
 
-  if (auth?.accessToken && auth?.user) return null;
+  // Evitar render si ya está autenticado
+  if (auth?.accessToken && auth?.user) {
+    return null;
+  }
 
   const validateEmail = (value) => {
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@\"]+\.)+[^<>()[\]\\.,;:\s@\"]{2,})$/i;
