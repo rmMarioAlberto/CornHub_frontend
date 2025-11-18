@@ -26,7 +26,7 @@ const useUsers = () => {
       setUsers(usersArray);
     } catch (err) {
       console.error('Error cargando usuarios:', err);
-      setError('No se pudieron cargar los usuarios');
+      setError(err.message || 'Error al cargar usuarios');
       setUsers([]);
     } finally {
       setLoading(false);
