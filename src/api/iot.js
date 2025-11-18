@@ -7,7 +7,7 @@ export const createIot = async (data) => {
 
 export const getAllIot = async () => {
   const data = await api.get('/iot/all');
-  return data.iots;
+  return data.data;
 };
 
 export const deleteIot = async (idIot) => {
@@ -20,5 +20,5 @@ export const assignToParcela = async (idIot, idParcela) => {
 
 export const getFreeIots = async () => {
   const data = await api.get('/iot/iotsFree');
-  return data.iotsFree;
+  return data.data;
 };

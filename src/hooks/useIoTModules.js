@@ -13,12 +13,14 @@ const useIoTModules = () => {
     setError(null);
     try {
       const response = await getAllIot();
-      // Aseguramos que siempre sea un array
-      const data = Array.isArray(response) ? response : (response?.data || []);
+      // CAMBIO AQUÍ: el backend devuelve { data: [...] }
+      const data = Array.isArray(response)
+        ? response
+        : (response?.data || response?.parcelas || []); // ← Ajuste clave
       setIots(data);
     } catch (err) {
       setError(err.message || 'Error al cargar módulos IoT');
-      setIots([]); // Fallback seguro
+      setIots([]);
     } finally {
       setLoading(false);
     }
@@ -29,7 +31,9 @@ const useIoTModules = () => {
     setError(null);
     try {
       const response = await getFreeIots();
-      const data = Array.isArray(response) ? response : (response?.data || []);
+      const data = Array.isArray(response)
+        ? response
+        : (response?.data || response?.parcelas || []);
       setFreeIots(data);
     } catch (err) {
       setError(err.message || 'Error al cargar IoTs libres');

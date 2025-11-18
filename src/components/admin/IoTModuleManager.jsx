@@ -150,7 +150,14 @@ const IoTModuleManager = () => {
                   </td>
                   <td className="px-4 py-3">
                     {iot.id_parcela ? (
-                      <span className="badge-success text-xs">Parcela #{iot.id_parcela}</span>
+                      (() => {
+                        const parcela = fields.find(p => p.id_parcela === iot.id_parcela);
+                        return (
+                          <span className="badge-success text-xs">
+                            {parcela?.nombre || `Parcela #${iot.id_parcela}`}
+                          </span>
+                        );
+                      })()
                     ) : (
                       <span className="badge-warning text-xs">Sin asignar</span>
                     )}
@@ -193,8 +200,8 @@ const IoTModuleManager = () => {
         onClose={() => setShowModal(false)}
         title={
           modalType === 'create' ? 'Crear Módulo IoT' :
-          modalType === 'details' ? 'Detalles del Módulo' :
-          modalType === 'assign' ? 'Asignar a Parcela' : ''
+            modalType === 'details' ? 'Detalles del Módulo' :
+              modalType === 'assign' ? 'Asignar a Parcela' : ''
         }
       >
         {modalType === 'create' && (
@@ -226,21 +233,63 @@ const IoTModuleManager = () => {
           </div>
         )}
         {modalType === 'details' && selectedIot && (
-          <div className="space-y-3">
-            <div className="grid grid-cols-1 gap-2 text-sm">
-              <p><strong>ID:</strong> <code>#{selectedIot.id_iot}</code></p>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-3 text-sm bg-gray-50 p-4 rounded-lg">
+              <p><strong>ID:</strong> <code className="font-mono bg-gray-200 px-2 py-1 rounded">#{selectedIot.id_iot}</code></p>
               <p><strong>Descripción:</strong> {selectedIot.descripcion || '—'}</p>
-              <p><strong>Fecha creación:</strong> {new Date(selectedIot.fechaCreacion).toLocaleString('es-MX')}</p>
-              <p><strong>Última conexión:</strong> {selectedIot.ultima_conexion ? new Date(selectedIot.ultima_conexion).toLocaleString('es-MX') : '—'}</p>
-              <p><strong>Estado:</strong> <span className={selectedIot.status === 1 ? 'badge-success' : 'badge-danger'}>{selectedIot.status === 1 ? 'Activo' : 'Inactivo'}</span></p>
-              <p><strong>Parcela asignada:</strong> {selectedIot.id_parcela ? `#${selectedIot.id_parcela}` : 'Ninguna'}</p>
+              <p>
+                <strong>Fecha creación:</strong>{' '}
+                {selectedIot.fecha_creacion
+                  ? new Date(selectedIot.fecha_creacion).toLocaleString('es-MX', {
+                    dateStyle: 'long',
+                    timeStyle: 'short'
+                  })
+                  : '—'
+                }
+              </p>
+              <p>
+                <strong>Última conexión:</strong>{' '}
+                {selectedIot.ultima_conexion
+                  ? new Date(selectedIot.ultima_conexion).toLocaleString('es-MX')
+                  : <span className="text-gray-400">Nunca</span>
+                }
+              </p>
+              <p>
+                <strong>Estado:</strong>{' '}
+                <span className={`badge ${selectedIot.status === 1 ? 'badge-success' : 'badge-danger'}`}>
+                  {selectedIot.status === 1 ? 'Activo' : 'Inactivo'}
+                </span>
+              </p>
+
+              {/* AQUÍ ESTÁ EL CAMBIO: Mostrar nombre de la parcela */}
+              <p>
+                <strong>Parcela asignada:</strong>{' '}
+                {selectedIot.id_parcela ? (
+                  (() => {
+                    const parcela = fields.find(p => p.id_parcela === selectedIot.id_parcela);
+                    return parcela ? (
+                      <span className="badge-success">
+                        {parcela.nombre} (ID: {selectedIot.id_parcela})
+                      </span>
+                    ) : (
+                      <span className="badge-success">Parcela #{selectedIot.id_parcela}</span>
+                    );
+                  })()
+                ) : (
+                  <span className="badge-warning">Sin asignar</span>
+                )}
+              </p>
             </div>
-            {selectedIot.sensor_iot && selectedIot.sensor_iot.length > 0 && (
-              <div className="mt-4">
-                <p className="font-medium mb-2">Sensores conectados ({selectedIot.sensor_iot.length}):</p>
-                <div className="space-y-1">
+
+            {/* Sensores */}
+            {selectedIot.sensor_iot?.length > 0 && (
+              <div className="mt-6">
+                <p className="font-semibold text-green-800 mb-3">
+                  Sensores conectados ({selectedIot.sensor_iot.length})
+                </p>
+                <div className="flex flex-wrap gap-2">
                   {selectedIot.sensor_iot.map((s) => (
-                    <span key={s.id_sensor_iot} className="inline-block badge-success text-xs mr-1">
+                    <span key={s.id_sensor_iot} className="badge-success text-xs px-3 py-1">
                       Sensor #{s.id_sensor}
                     </span>
                   ))}
