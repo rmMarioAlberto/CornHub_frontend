@@ -54,13 +54,13 @@ const useAuth = () => {
     setLoading(true);
     setError(null);
     try {
-      await logout();
+      await logout(); // ← ahora llama al DELETE correcto
       updateAuth({ user: null, accessToken: null, refreshToken: null });
-      navigate('/login', { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
+      navigate('/login', { replace: true }); // ← evita volver atrás con el botón del navegador
     }
   };
 
