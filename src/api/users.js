@@ -6,6 +6,7 @@ export const createUser = async (userData) => {
 };
 
 export const getAllUsers = async () => {
-  const data = await api.get('/users/getUsers');
-  return data.usuarios || data;
+  const response = await api.get('/users/getUsers');
+  
+  return response.users || response.data?.users || response || [];
 };

@@ -20,6 +20,7 @@ const useFields = () => {
 
       const mapped = parcelas.map(p => ({
         id_parcela: p.id_parcela || p.idParcela,
+        id_usuario: p.id_usuario || p.idUsuario,
         nombre: p.nombre || 'Sin nombre',
         descripcion: p.descripcion || '',
         largo: p.largo || 0,
