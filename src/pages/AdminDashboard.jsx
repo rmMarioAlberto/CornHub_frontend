@@ -138,7 +138,7 @@ const AdminDashboard = () => {
           )}
 
           {/* Tarjetas Interactivas */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
             <StatCardButton
               icon={FaUsers}
               title="Usuarios"
@@ -160,7 +160,7 @@ const AdminDashboard = () => {
               value={stats.iotDevices}
               to="/admin/iot"
             />
-            <StatCardButton
+            {/* <StatCardButton
               icon={FaExclamationTriangle}
               title="Alertas Activas"
               subtitle="Requieren atención inmediata"
@@ -168,7 +168,7 @@ const AdminDashboard = () => {
               to="/admin/alerts"
               color="text-orange-600"
               bgHover="hover:bg-orange-50"
-            />
+            /> */}
           </div>
 
           <div className="text-center">

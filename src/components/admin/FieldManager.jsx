@@ -12,7 +12,7 @@ const FieldManager = () => {
   const { fields: rawFields = [], loading: loadingFields, error: errorFields, createNewField, refresh: refreshFields } = useFields();
   const { crops = [], loading: loadingCrops } = useCrops();
   const { users: rawUsers = [], loading: loadingUsers } = useUsers();
-  const auth = useAuth(); // ← useAuth es un hook, no un objeto con auth
+  const { auth } = useAuth(); // ← useAuth es un hook, no un objeto con auth
   const isAdmin = auth?.user?.tipo_usuario === 2 || auth?.user?.tipo === 2;
 
   // Normalizamos los datos del backend
@@ -178,37 +178,38 @@ const FieldManager = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="form-label">Nombre *</label>
-                <Input placeholder="Parcela Norte" value={form.nombre} onChange={e => setForm({...form, nombre: e.target.value})} />
+                <Input placeholder="Parcela Norte" value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} />
               </div>
               <div>
                 <label className="form-label">Cultivo *</label>
-                <select className="input-field w-full" value={form.idCultivo} onChange={e => setForm({...form, idCultivo: e.target.value})}>
+                <select className="input-field w-full" value={form.idCultivo} onChange={e => setForm({ ...form, idCultivo: e.target.value })}>
                   <option value="">Seleccionar cultivo</option>
                   {crops.map(c => (
-                    <option key={c.id_cultivo} value={c.id_cultivo}>{c.nombre}</option>
-                  ))}
+                    <option key={c.id_cultivo} value={c.id_cultivo}>
+                      {c.nombre.charAt(0).toUpperCase() + c.nombre.slice(1)}
+                    </option>))}
                 </select>
               </div>
             </div>
 
             <div>
               <label className="form-label">Descripción</label>
-              <Input placeholder="Zona experimental..." value={form.descripcion} onChange={e => setForm({...form, descripcion: e.target.value})} />
+              <Input placeholder="Zona experimental..." value={form.descripcion} onChange={e => setForm({ ...form, descripcion: e.target.value })} />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div><label className="form-label">Largo (m) *</label><Input type="number" step="0.1" value={form.largo} onChange={e => setForm({...form, largo: e.target.value})} /></div>
-              <div><label className="form-label">Ancho (m) *</label><Input type="number" step="0.1" value={form.ancho} onChange={e => setForm({...form, ancho: e.target.value})} /></div>
+              <div><label className="form-label">Largo (m) *</label><Input type="number" step="0.1" value={form.largo} onChange={e => setForm({ ...form, largo: e.target.value })} /></div>
+              <div><label className="form-label">Ancho (m) *</label><Input type="number" step="0.1" value={form.ancho} onChange={e => setForm({ ...form, ancho: e.target.value })} /></div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div><label className="form-label">Latitud (opcional)</label><Input type="number" step="0.000001" value={form.latitud} onChange={e => setForm({...form, latitud: e.target.value})} /></div>
-              <div><label className="form-label">Longitud (opcional)</label><Input type="number" step="0.000001" value={form.longitud} onChange={e => setForm({...form, longitud: e.target.value})} /></div>
+              <div><label className="form-label">Latitud (opcional)</label><Input type="number" step="0.000001" value={form.latitud} onChange={e => setForm({ ...form, latitud: e.target.value })} /></div>
+              <div><label className="form-label">Longitud (opcional)</label><Input type="number" step="0.000001" value={form.longitud} onChange={e => setForm({ ...form, longitud: e.target.value })} /></div>
             </div>
 
             <div>
               <label className="form-label">Propietario *</label>
-              <select className="input-field w-full" value={form.id_usuario} onChange={e => setForm({...form, id_usuario: e.target.value})}>
+              <select className="input-field w-full" value={form.id_usuario} onChange={e => setForm({ ...form, id_usuario: e.target.value })}>
                 <option value="">Seleccionar usuario</option>
                 {users.map(u => (
                   <option key={u.id} value={u.id}>
@@ -232,8 +233,10 @@ const FieldManager = () => {
             <p><strong>Descripción:</strong> {selectedParcela.descripcion || '—'}</p>
             <p><strong>Dimensiones:</strong> {selectedParcela.largo} × {selectedParcela.ancho} m</p>
             <p><strong>Área:</strong> {(parseFloat(selectedParcela.largo) * parseFloat(selectedParcela.ancho)).toFixed(2)} m²</p>
-            <p><strong>Cultivo:</strong> {crops.find(c => c.id_cultivo === selectedParcela.id_cultivo)?.nombre || 'Sin asignar'}</p>
-            <p><strong>Propietario:</strong> {users.find(u => u.id === selectedParcela.id_usuario)?.name || 'Desconocido'}</p>
+            <p><strong>Cultivo:</strong> {
+              crops.find(c => c.id_cultivo === selectedParcela.idCultivo || c.id_cultivo === selectedParcela.id_cultivo)?.nombre
+              || 'Sin asignar'
+            }</p>            <p><strong>Propietario:</strong> {users.find(u => u.id === selectedParcela.id_usuario)?.name || 'Desconocido'}</p>
             {selectedParcela.latitud && selectedParcela.longitud && (
               <a href={`https://maps.google.com/maps?q=${selectedParcela.latitud},${selectedParcela.longitud}`} target="_blank" rel="noopener noreferrer" className="text-green-700 underline">
                 Ver en Google Maps
