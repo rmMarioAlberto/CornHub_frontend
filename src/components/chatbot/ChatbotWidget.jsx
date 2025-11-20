@@ -4,6 +4,41 @@ import { MessageCircle, Send, X, Leaf } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
 import { API_URL } from '../../utils/env';
 
+// ← NUEVA FUNCIÓN: Convierte Markdown básico a React (solo lo necesario para Grok)
+const parseMarkdown = (text) => {
+  if (!text) return text;
+
+  const lines = text.split('\n');
+  return lines.map((line, idx) => {
+    let content = line;
+
+    // Negritas: **texto** → <strong>
+    content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+    // Cursivas: *texto* → <em>
+    content = content.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+    // Listas con - o •
+    if (/^\s*[-•]\s/.test(line)) {
+      return (
+        <div key={idx} className="flex items-start gap-2 ml-4">
+          <span className="text-[#6DA544] mt-1">•</span>
+          <span dangerouslySetInnerHTML={{ __html: content.replace(/^\s*[-•]\s*/, '') }} />
+        </div>
+      );
+    }
+
+    // Líneas vacías → <br>
+    if (content.trim() === '') {
+      return <br key={idx} />;
+    }
+
+    return (
+      <p key={idx} className="mb-2" dangerouslySetInnerHTML={{ __html: content }} />
+    );
+  });
+};
+
 const ChatbotWidget = ({ selectedParcela }) => {
   const { auth } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -41,11 +76,8 @@ const ChatbotWidget = ({ selectedParcela }) => {
 
       if (res.ok) {
         const data = await res.json();
-
-        // La respuesta real tiene: data.data.messages (array de objetos con "content")
         const rawMessages = data?.data?.messages || [];
 
-        // Normalizamos al formato esperado por el componente: { role, message }
         const normalizedMessages = rawMessages.map(msg => ({
           role: msg.role,
           message: msg.content || '',
@@ -178,7 +210,14 @@ const ChatbotWidget = ({ selectedParcela }) => {
                         : 'bg-[#A8CDBD] text-[#1A1A1A] border border-[#6DA544]/20'
                     }`}
                   >
-                    {msg.message}
+                    {/* ← AQUÍ ESTÁ EL CAMBIO CLAVE */}
+                    {msg.role === 'assistant' ? (
+                      <div className="prose prose-sm max-w-none text-[#1A1A1A]">
+                        {parseMarkdown(msg.message)}
+                      </div>
+                    ) : (
+                      <p>{msg.message}</p>
+                    )}
                   </div>
                 </div>
               ))}
