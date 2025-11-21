@@ -13,8 +13,8 @@ import IoTModuleSetup from '../pages/IoTModuleSetup';
 import FieldManagement from '../pages/FieldManagement';
 import UserManagement from '../pages/UserManagement';
 import FarmerDashboard from '../pages/FarmerDashboard';
+import FieldDetails from '../pages/FieldDetails';
 // import FieldRegistration from '../pages/FieldRegistration';
-// import FieldDetails from '../pages/FieldDetails';
 // import Profile from '../pages/Profile';
 // import NotFound from '../pages/NotFound';
 
@@ -41,9 +41,12 @@ const AppRoutes = () => {
       {/* ====================== RUTAS FARMER (tipo_usuario = 1) ====================== */}
       <Route element={<ProtectedRoute allowedRoles={[1]} />}>
         <Route path="/farmer" element={<FarmerDashboard />} />
-        {/* <Route path="/create-field" element={<FieldRegistration />} />
-        <Route path="/field/:id" element={<FieldDetails />} />
-        <Route path="/profile" element={<Profile />} /> */}
+        
+        {/* Detalles completos de una parcela (gráficas, historial, etc.) */}
+        <Route path="/field-details/:id" element={<FieldDetails />} />
+        
+        {/* Perfil del agricultor */}
+        {/* <Route path="/profile" element={<Profile />} /> */}
       </Route>
 
       {/* ====================== RUTA 404 ====================== */}
