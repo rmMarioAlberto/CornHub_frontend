@@ -274,7 +274,7 @@ const FarmerDashboard = () => {
       >
         <div className="hero-overlay" />
         <div className="hero-content">
-          <h1 className="text-5xl md:text-6xl font-bold mb-3">
+          <h1 className="text-5xl md:text-6xl text-[#A8CDBD] font-bold mb-3">
             {selectedParcela?.nombre || 'Mis Cultivos'}
           </h1>
           <p className="text-xl md:text-2xl">Monitoreo en tiempo real</p>

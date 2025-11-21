@@ -20,7 +20,7 @@ const FarmerHeader = () => {
     <Header
       navItems={navItems}
       logoSrc="/assets/images/lettucecirity-icono.png"
-      // bgColor="bg-[#C3D18D]"
+      bgColor="bg-[#6FA575]"
       className="shadow-lg"
     >
       <div className="flex items-center gap-4">
