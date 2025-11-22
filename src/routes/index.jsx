@@ -15,7 +15,7 @@ import UserManagement from '../pages/UserManagement';
 import FarmerDashboard from '../pages/FarmerDashboard';
 import FieldDetails from '../pages/FieldDetails';
 // import FieldRegistration from '../pages/FieldRegistration';
-// import Profile from '../pages/Profile';
+import Profile from '../pages/Profile';
 // import NotFound from '../pages/NotFound';
 
 /* -------------------------------------------------------------------------- */

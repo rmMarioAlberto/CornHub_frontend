@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, Send, X, Leaf } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
-import { API_URL } from '../../utils/env';
+import { api } from '../../api/apiClient';
 
 // ← NUEVA FUNCIÓN: Convierte Markdown básico a React (solo lo necesario para Grok)
 const parseMarkdown = (text) => {
@@ -65,26 +65,16 @@ const ChatbotWidget = ({ selectedParcela }) => {
     if (!auth?.accessToken || !selectedParcela?.id_parcela) return;
 
     try {
-      const res = await fetch(`${API_URL}/chat/getChat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${auth.accessToken}`,
-        },
-        body: JSON.stringify({ idParcel: selectedParcela.id_parcela }),
-      });
+      const data = await api.post('/chat/getChat', { idParcel: selectedParcela.id_parcela });
 
-      if (res.ok) {
-        const data = await res.json();
-        const rawMessages = data?.data?.messages || [];
+      const rawMessages = data?.data?.messages || [];
 
-        const normalizedMessages = rawMessages.map(msg => ({
-          role: msg.role,
-          message: msg.content || '',
-        }));
+      const normalizedMessages = rawMessages.map(msg => ({
+        role: msg.role,
+        message: msg.content || '',
+      }));
 
-        setMessages(normalizedMessages);
-      }
+      setMessages(normalizedMessages);
     } catch (err) {
       console.warn('Error cargando historial del chat', err);
       setMessages([]);
@@ -100,35 +90,20 @@ const ChatbotWidget = ({ selectedParcela }) => {
     setIsTyping(true);
 
     try {
-      const res = await fetch(`${API_URL}/chat/chatbot`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${auth.accessToken}`,
-        },
-        body: JSON.stringify({
-          idParcela: selectedParcela.id_parcela,
-          message: inputValue.trim(),
-        }),
+      const data = await api.post('/chat/chatbot', {
+        idParcela: selectedParcela.id_parcela,
+        message: inputValue.trim(),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        const assistantMessage = {
-          role: 'assistant',
-          message: data.message || 'No pude procesar tu solicitud.',
-        };
-        setMessages(prev => [...prev, assistantMessage]);
-      } else {
-        setMessages(prev => [
-          ...prev,
-          { role: 'assistant', message: 'Lo siento, no puedo responder en este momento.' },
-        ]);
-      }
+      const assistantMessage = {
+        role: 'assistant',
+        message: data.message || 'No pude procesar tu solicitud.',
+      };
+      setMessages(prev => [...prev, assistantMessage]);
     } catch (err) {
       setMessages(prev => [
         ...prev,
-        { role: 'assistant', message: 'Error de conexión. Verifica tu internet.' },
+        { role: 'assistant', message: 'Lo siento, no puedo responder en este momento.' },
       ]);
     } finally {
       setIsTyping(false);

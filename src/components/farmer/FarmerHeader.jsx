@@ -11,7 +11,7 @@ const FarmerHeader = () => {
   const navigate = useNavigate();
 
   const navItems = [
-    { label: 'Mi perfil', link: '/profile' },
+    //{ label: 'Mi perfil', link: '/profile' },
     { label: 'Mis cultivos', link: '/farmer' },
     { label: 'Contacto WhatsApp', link: 'https://api.whatsapp.com/send?phone=5217121924905' },
   ];

@@ -11,8 +11,8 @@ const AdminHeader = () => {
   const navigate = useNavigate();
 
   const navItems = [
-    { label: 'Mi Perfil', link: '/admin/profile' },
-    { label: 'Crear Cultivos', link: '/admin/create-crop' },
+    //{ label: 'Mi Perfil', link: '/admin/profile' },
+    { label: 'Crear Cultivos', link: '/admin/fields' },
     { label: 'Usuarios', link: '/admin/users' },
     { label: 'IoT', link: '/admin/iot' },
   ];

@@ -82,7 +82,6 @@ class ApiClient {
       }
 
       this.setTokens(accessToken, newRefreshToken || refreshToken);
-
       console.log('Token refreshed successfully');
       return accessToken;
     } catch (err) {
@@ -101,11 +100,11 @@ class ApiClient {
       credentials: 'include',
     };
 
-    // === RUTAS PÚBLICAS: NO requieren token ni refresh ===
+    // Public endpoints that don't need auth
     const publicEndpoints = [
       '/auth/login',
       '/auth/register',
-      '/auth/refreshToken'
+      '/auth/refreshToken',
     ];
     const isPublic = publicEndpoints.some(path => endpoint.startsWith(path));
 
@@ -119,23 +118,18 @@ class ApiClient {
       }
     }
 
-    let res = await fetch(url, config);
+    const res = await fetch(url, config);
 
-    // === MANEJO DE 401 ===
+    // === 401 handling ===
     if (res.status === 401 && !options._retry) {
-      // Si es login o register → NO intentar refresh, solo devolver error
       if (endpoint.startsWith('/auth/login') || endpoint.startsWith('/auth/register')) {
         const errData = await res.json().catch(() => ({}));
         throw new Error(errData.message || 'Credenciales inválidas');
       }
-
-      // Si es refreshToken fallido → redirigir
       if (endpoint.includes('refreshToken')) {
         this.redirectToLogin();
         throw new Error('Sesión expirada');
       }
-
-      // Para cualquier otra ruta protegida → intentar refresh
       console.log(`Token expired on ${endpoint}, attempting refresh...`);
       try {
         await this._refreshToken();
@@ -146,7 +140,7 @@ class ApiClient {
       }
     }
 
-    // === ERRORES GENERALES ===
+    // === General error handling ===
     if (!res.ok) {
       let errData;
       try {
@@ -157,7 +151,8 @@ class ApiClient {
       throw new Error(errData.message || `Error ${res.status}`);
     }
 
-    return res.json();
+    // Return parsed JSON (no decryption)
+    return await res.json();
   }
 
   get = (endpoint) => this.request(endpoint, { method: 'GET' });
