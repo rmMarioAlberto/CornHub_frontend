@@ -3,16 +3,20 @@ import React, { useState } from 'react';
 import useFields from '../../hooks/useFields';
 import useCrops from '../../hooks/useCrops';
 import useUsers from '../../hooks/useUsers';
-import useAuth from '../../hooks/useAuth'; // ← CORREGIDO: sin llaves
+import useAuth from '../../hooks/useAuth';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import Modal from '../common/Modal';
+
+// --- NUEVOS IMPORTS ---
+import { getIotsParcela } from '../../api/iot';
+import FieldMap from '../farmer/FieldMap';
 
 const FieldManager = () => {
   const { fields: rawFields = [], loading: loadingFields, error: errorFields, createNewField, refresh: refreshFields } = useFields();
   const { crops = [], loading: loadingCrops } = useCrops();
   const { users: rawUsers = [], loading: loadingUsers } = useUsers();
-  const { auth } = useAuth(); // ← useAuth es un hook, no un objeto con auth
+  const { auth } = useAuth();
   const isAdmin = auth?.user?.tipo_usuario === 2 || auth?.user?.tipo === 2;
 
   // Normalizamos los datos del backend
@@ -23,6 +27,9 @@ const FieldManager = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('create');
   const [selectedParcela, setSelectedParcela] = useState(null);
+  
+  // Nuevo estado para los IoTs de la parcela seleccionada
+  const [parcelaIots, setParcelaIots] = useState([]);
 
   const [form, setForm] = useState({
     nombre: '',
@@ -44,10 +51,21 @@ const FieldManager = () => {
     setShowModal(true);
   };
 
-  const handleOpenDetails = (parcela) => {
+  // MODIFICADO: Cargar IoTs al abrir detalles
+  const handleOpenDetails = async (parcela) => {
     setSelectedParcela(parcela);
     setModalType('details');
     setShowModal(true);
+    setParcelaIots([]); // Limpiar estado anterior
+
+    try {
+        const res = await getIotsParcela(parcela.id_parcela);
+        // Manejo robusto de la respuesta { data: [...] } o [...]
+        const data = Array.isArray(res) ? res : (res.data || []);
+        setParcelaIots(data);
+    } catch (error) {
+        console.error("Error cargando IoTs para el mapa", error);
+    }
   };
 
   const handleSubmit = async () => {
@@ -227,20 +245,50 @@ const FieldManager = () => {
         )}
 
         {modalType === 'details' && selectedParcela && (
-          <div className="bg-gray-50 p-6 rounded-lg space-y-3 text-sm">
-            <p><strong>ID:</strong> #{selectedParcela.id_parcela}</p>
-            <p><strong>Nombre:</strong> {selectedParcela.nombre}</p>
-            <p><strong>Descripción:</strong> {selectedParcela.descripcion || '—'}</p>
-            <p><strong>Dimensiones:</strong> {selectedParcela.largo} × {selectedParcela.ancho} m</p>
-            <p><strong>Área:</strong> {(parseFloat(selectedParcela.largo) * parseFloat(selectedParcela.ancho)).toFixed(2)} m²</p>
-            <p><strong>Cultivo:</strong> {
-              crops.find(c => c.id_cultivo === selectedParcela.idCultivo || c.id_cultivo === selectedParcela.id_cultivo)?.nombre
-              || 'Sin asignar'
-            }</p>            <p><strong>Propietario:</strong> {users.find(u => u.id === selectedParcela.id_usuario)?.name || 'Desconocido'}</p>
+          <div className="space-y-6">
+            {/* Información textual */}
+            <div className="bg-gray-50 p-4 rounded-lg space-y-2 text-sm border border-gray-200">
+                <div className="flex justify-between">
+                    <span className="text-gray-500">Nombre:</span>
+                    <span className="font-bold">{selectedParcela.nombre}</span>
+                </div>
+                <div className="flex justify-between">
+                    <span className="text-gray-500">Dimensiones:</span>
+                    <span>{selectedParcela.largo}m × {selectedParcela.ancho}m</span>
+                </div>
+                <div className="flex justify-between">
+                    <span className="text-gray-500">Cultivo:</span>
+                    <span>{crops.find(c => c.id_cultivo === selectedParcela.idCultivo || c.id_cultivo === selectedParcela.id_cultivo)?.nombre || '—'}</span>
+                </div>
+                 <div className="flex justify-between">
+                    <span className="text-gray-500">Propietario:</span>
+                    <span>{users.find(u => u.id === selectedParcela.id_usuario)?.name || '—'}</span>
+                </div>
+                <div className="flex justify-between">
+                    <span className="text-gray-500">Dispositivos IoT:</span>
+                    <span className="font-bold text-green-700">{parcelaIots.length} asignados</span>
+                </div>
+            </div>
+
+            {/* MAPA DE DISPOSITIVOS 
+
+[Image of x icon]
+ */}
+            <div className="border-t pt-4">
+                <h4 className="text-md font-bold text-green-800 mb-3">Distribución de Dispositivos</h4>
+                <FieldMap 
+                    width={parseFloat(selectedParcela.ancho)} 
+                    length={parseFloat(selectedParcela.largo)} 
+                    iots={parcelaIots} 
+                />
+            </div>
+
             {selectedParcela.latitud && selectedParcela.longitud && (
-              <a href={`https://maps.google.com/maps?q=${selectedParcela.latitud},${selectedParcela.longitud}`} target="_blank" rel="noopener noreferrer" className="text-green-700 underline">
-                Ver en Google Maps
-              </a>
+              <div className="text-right text-xs">
+                <a href={`https://maps.google.com/maps?q=${selectedParcela.latitud},${selectedParcela.longitud}`} target="_blank" rel="noopener noreferrer" className="text-green-700 underline hover:text-green-900">
+                   Ver ubicación geográfica en Google Maps
+                </a>
+              </div>
             )}
           </div>
         )}
