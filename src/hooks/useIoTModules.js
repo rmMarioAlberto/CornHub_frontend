@@ -13,10 +13,9 @@ const useIoTModules = () => {
     setError(null);
     try {
       const response = await getAllIot();
-      // CAMBIO AQUÍ: el backend devuelve { data: [...] }
       const data = Array.isArray(response)
         ? response
-        : (response?.data || response?.parcelas || []); // ← Ajuste clave
+        : (response?.data || response?.parcelas || []);
       setIots(data);
     } catch (err) {
       setError(err.message || 'Error al cargar módulos IoT');
@@ -49,7 +48,7 @@ const useIoTModules = () => {
     try {
       await createIot(data);
       await fetchAllIot();
-      await fetchFreeIots(); // Actualiza también los libres
+      await fetchFreeIots();
     } catch (err) {
       setError(err.message || 'Error al crear módulo IoT');
       throw err;
@@ -73,11 +72,12 @@ const useIoTModules = () => {
     }
   };
 
-  const assignIotToParcela = async (idIot, idParcela) => {
+  // MODIFICADO: Recibe coordenadas
+  const assignIotToParcela = async (idIot, idParcela, x, y) => {
     setLoading(true);
     setError(null);
     try {
-      await assignToParcela(idIot, idParcela);
+      await assignToParcela(idIot, idParcela, x, y);
       await fetchAllIot();
       await fetchFreeIots();
     } catch (err) {

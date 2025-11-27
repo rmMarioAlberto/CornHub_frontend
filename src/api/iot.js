@@ -14,8 +14,14 @@ export const deleteIot = async (idIot) => {
   return await api.post('/iot/delete', { idIot });
 };
 
-export const assignToParcela = async (idIot, idParcela) => {
-  return await api.post('/iot/asignarParcela', { idIot, idParcela });
+// MODIFICADO: Ahora acepta coordenadas X e Y
+export const assignToParcela = async (idIot, idParcela, coordenadaX, coordenadaY) => {
+  return await api.post('/iot/asignarParcela', { 
+    idIot, 
+    idParcela,
+    coordenadaX,
+    coordenadaY
+  });
 };
 
 export const getFreeIots = async () => {
@@ -23,11 +29,7 @@ export const getFreeIots = async () => {
   return data.data;
 };
 
-// --- NUEVO ---
 export const getIotsParcela = async (idParcela) => {
   const response = await api.post('/parcela/getIotsParcela', { idParcela });
-  // La respuesta del backend es { statusCode: 200, data: [ ... ] }
-  // Si tu apiClient devuelve response.data automáticamente, esto retorna el objeto JSON.
-  // Si devuelve axios response, accedemos a .data.
-  return response.data || response; 
+  return response.data?.data || response.data || [];
 };
