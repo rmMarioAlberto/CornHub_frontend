@@ -22,3 +22,12 @@ export const getFreeIots = async () => {
   const data = await api.get('/iot/iotsFree');
   return data.data;
 };
+
+// --- NUEVO ---
+export const getIotsParcela = async (idParcela) => {
+  const response = await api.post('/parcela/getIotsParcela', { idParcela });
+  // La respuesta del backend es { statusCode: 200, data: [ ... ] }
+  // Si tu apiClient devuelve response.data automáticamente, esto retorna el objeto JSON.
+  // Si devuelve axios response, accedemos a .data.
+  return response.data || response; 
+};
