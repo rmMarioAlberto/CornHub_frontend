@@ -1,9 +1,9 @@
 // src/pages/FieldDetails.jsx
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom'; // Agregado useNavigate
 import { 
-  ArrowLeft, AlertTriangle, Camera, Thermometer, Droplet, FlaskConical, 
-  LayoutDashboard, Filter, Calendar, CheckSquare, Square 
+  AlertTriangle, Camera, Thermometer, Droplet, FlaskConical, 
+  LayoutDashboard, Filter, Calendar, CheckSquare, Square, ChevronDown
 } from 'lucide-react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -22,9 +22,11 @@ import { calculateFieldCoverage } from '../utils/calculateIoTModules';
 
 const FieldDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate(); // Hook para navegación
   const { auth } = useAuth();
 
   // Estados de Datos
+  const [parcelas, setParcelas] = useState([]); // Lista completa para el selector
   const [cycleData, setCycleData] = useState(null);
   const [parcelaInfo, setParcelaInfo] = useState(null);
   const [fieldIots, setFieldIots] = useState([]);
@@ -33,13 +35,57 @@ const FieldDetails = () => {
   // Estados de Filtros
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [selectedIots, setSelectedIots] = useState([]); // Array de IDs
+  const [selectedIots, setSelectedIots] = useState([]); 
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Estados para acciones de ciclo (Traídos del Dashboard)
+  const [cycleActionLoading, setCycleActionLoading] = useState(false);
 
-  // Función para cargar datos del ciclo (ahora acepta filtros)
+  // --- FUNCIONES MIGRADAS DEL DASHBOARD (Gestión de Ciclo) ---
+
+  const handleCreateCycle = async () => {
+    if (!id) return;
+    setCycleActionLoading(true);
+    try {
+      await api.post('/parcela/createCycle', { idParcela: Number(id) });
+      // Recargar datos tras crear
+      await fetchCycleData();
+    } catch (err) {
+      alert(err.message || 'No se pudo crear el ciclo');
+    } finally {
+      setCycleActionLoading(false);
+    }
+  };
+
+  const handleStageChange = async (e) => {
+    const newIndex = Number(e.target.value);
+    if (!cycleData || newIndex === cycleData.current_stage_index) return;
+
+    const stageName = cycleData.stages[newIndex].stage_name;
+    if (!window.confirm(`¿Avanzar a la etapa "${stageName}"? Se cerrará la etapa actual.`)) return;
+
+    setCycleActionLoading(true);
+    try {
+      await api.post('/parcela/updateCurrentStage', {
+        idParcela: Number(id),
+        stageIndex: newIndex,
+      });
+      // Recargar datos tras actualizar
+      await fetchCycleData();
+    } catch (err) {
+      alert('Error al cambiar la etapa: ' + err.message);
+    } finally {
+      setCycleActionLoading(false);
+    }
+  };
+
+  // --- LÓGICA EXISTENTE DE FIELDDETAILS ---
+
+  // Función para cargar datos del ciclo
   const fetchCycleData = async (filters = {}) => {
+    if (!id) return;
     try {
       const payload = { 
         idParcela: Number(id),
@@ -64,16 +110,32 @@ const FieldDetails = () => {
       setLoading(true);
       setError(null);
       try {
-        // 1. Info Parcela
+        // 1. Obtener TODAS las parcelas (para el selector y para encontrar la actual)
         const resInfo = await api.get('/parcela/getParcelasUser');
         const infoBody = resInfo.data || resInfo;
-        const listaParcelas = infoBody.parcelas || [];
-        const foundInfo = listaParcelas.find(p => p.id_parcela === Number(id));
+        const listaParcelas = Array.isArray(infoBody) ? infoBody : (infoBody.parcelas || []);
+        
+        setParcelas(listaParcelas); // Guardamos la lista para el dropdown
+
+        // LÓGICA DE REDIRECCIÓN: Si no hay ID en la URL, ir a la primera parcela
+        if (!id && listaParcelas.length > 0) {
+            navigate(`/farmer/${listaParcelas[0].id_parcela}`, { replace: true });
+            return; // Detener ejecución aquí, el useEffect se disparará de nuevo al cambiar la URL
+        }
+
+        if (listaParcelas.length === 0) {
+            setError("No tienes parcelas registradas.");
+            setLoading(false);
+            return;
+        }
+
+        const currentId = Number(id);
+        const foundInfo = listaParcelas.find(p => p.id_parcela === currentId);
         setParcelaInfo(foundInfo || { nombre: 'Parcela desconocida', ancho: 0, largo: 0 });
 
-        // 2. IoTs (Necesarios para el mapa y para llenar el filtro)
+        // 2. IoTs
         if (foundInfo) {
-            const resIots = await getIotsParcela(Number(id));
+            const resIots = await getIotsParcela(currentId);
             const iotsBody = resIots.data || resIots; 
             const iotsList = Array.isArray(iotsBody) ? iotsBody : [];
             setFieldIots(iotsList);
@@ -84,20 +146,21 @@ const FieldDetails = () => {
             setCoverageData(stats);
         }
 
-        // 3. Cargar Ciclo (Sin filtros iniciales)
+        // 3. Cargar Ciclo
         await fetchCycleData();
 
       } catch (err) {
         console.error(err);
-        setError('Error al cargar la información de la parcela');
+        setError('Error al cargar la información.');
       } finally {
-        setLoading(false);
+        // Solo quitamos loading si tenemos ID (si redirigimos, esperamos a la nueva carga)
+        if (id) setLoading(false);
       }
     };
 
     if (auth?.accessToken) initLoad();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, auth]);
+  }, [id, auth, navigate]); // Añadido navigate a dependencias
 
   // Manejador de Filtros
   const handleApplyFilters = () => {
@@ -106,7 +169,6 @@ const FieldDetails = () => {
       if (startDate) filters.fechaInicio = startDate;
       if (endDate) filters.fechaFin = endDate;
 
-      // Recargar datos del ciclo con los filtros
       setLoading(true);
       fetchCycleData(filters).finally(() => setLoading(false));
   };
@@ -127,7 +189,7 @@ const FieldDetails = () => {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin w-16 h-16 border-8 border-green-700 border-t-transparent rounded-full mx-auto mb-6"></div>
-            <p className="text-2xl text-gray-700">Cargando detalles...</p>
+            <p className="text-2xl text-gray-700">Cargando parcela...</p>
           </div>
         </div>
         <Footer />
@@ -141,11 +203,8 @@ const FieldDetails = () => {
         <FarmerHeader />
         <main className="flex-1 container-main py-20 text-center">
           <AlertTriangle className="w-24 h-24 text-red-600 mx-auto mb-6" />
-          <h2 className="text-3xl font-bold text-red-700 mb-4">Error</h2>
+          <h2 className="text-3xl font-bold text-red-700 mb-4">Aviso</h2>
           <p className="text-xl text-gray-600 mb-8">{error}</p>
-          <Link to="/farmer">
-            <Button variant="primary">Volver al Dashboard</Button>
-          </Link>
         </main>
         <Footer />
       </div>
@@ -157,10 +216,7 @@ const FieldDetails = () => {
   
   // Datos para gráficos
   const readings = hasCycle ? cycleData.stages.flatMap(s => s.readings) : [];
-  // Ordenar cronológicamente
   const sortedReadings = readings.sort((a, b) => new Date(a.hora) - new Date(b.hora)); 
-  // Si no hay filtros de fecha, limitamos a 20 para que no se sature la gráfica por defecto,
-  // pero si hay filtros, mostramos todo lo que devolvió el backend.
   const displayReadings = (startDate || endDate) ? sortedReadings : sortedReadings.slice(-20);
 
   const chartData = displayReadings.map(r => {
@@ -181,30 +237,99 @@ const FieldDetails = () => {
     <div className="min-h-screen flex flex-col bg-gray-50 font-poppins">
       <FarmerHeader />
 
-      {/* Hero - Color de Texto Ajustado */}
-      <section className="bg-gradient-to-b from-[#2E5C3F] to-[#1e3d2a] text-white py-16 shadow-md">
+      {/* --- SECCIÓN NUEVA: BARRA DE SELECCIÓN DE PARCELA --- */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
+        <div className="container-main py-3 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+                <LayoutDashboard className="text-green-700" />
+                <span className="text-gray-600 font-medium">Seleccionar Parcela:</span>
+                <div className="relative flex-1 sm:flex-none">
+                    <select 
+                        className="appearance-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full pl-3 pr-10 py-2"
+                        value={id || ''}
+                        onChange={(e) => navigate(`/farmer/${e.target.value}`)}
+                    >
+                        {parcelas.map(p => (
+                            <option key={p.id_parcela} value={p.id_parcela}>
+                                {p.nombre}
+                            </option>
+                        ))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                </div>
+            </div>
+            
+            {/* Si NO hay ciclo, mostramos botón de crear aquí también por accesibilidad */}
+            {!hasCycle && (
+                 <Button 
+                    variant="primary" 
+                    size="sm"
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                    onClick={handleCreateCycle}
+                    disabled={cycleActionLoading}
+                >
+                    {cycleActionLoading ? 'Iniciando...' : 'Iniciar Nuevo Ciclo'}
+                </Button>
+            )}
+        </div>
+      </div>
+
+      {/* Hero */}
+      <section className="bg-gradient-to-b from-[#2E5C3F] to-[#1e3d2a] text-white py-12 shadow-md">
         <div className="container-main">
-          <Link to="/farmer" className="inline-flex items-center gap-2 text-white hover:text-[#C3D18D] mb-6 transition-colors">
-            <ArrowLeft className="w-5 h-5" />
-            Volver al Dashboard
-          </Link>
-          
-          {/* Título con sombra para mejor contraste */}
-          <h1 className="text-5xl font-bold text-white mb-4 drop-shadow-md">
+          {/* Título */}
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-2 drop-shadow-md">
              {parcelaInfo?.nombre || 'Mi Parcela'}
           </h1>
+          <p className="opacity-80 mb-6">{parcelaInfo?.descripcion}</p>
           
           {hasCycle ? (
-            <>
-                <p className="text-2xl opacity-90 font-light text-gray-100">
-                    {cycleData.cultivo_name} • Ciclo #{cycleData.ciclo_num}
-                </p>
-                <p className="text-xl mt-2 text-[#C3D18D] font-medium">
-                    Etapa actual: {currentStage.stage_name}
-                </p>
-            </>
+            <div className="bg-white/10 p-4 rounded-xl backdrop-blur-sm inline-block min-w-[300px]">
+                <div className="flex flex-col md:flex-row md:items-center gap-4">
+                    <div>
+                        <p className="text-xl font-semibold text-white">
+                            {cycleData.cultivo_name} • Ciclo #{cycleData.ciclo_num}
+                        </p>
+                        <p className="text-[#C3D18D] font-medium mt-1">
+                            Etapa actual: {currentStage.stage_name}
+                        </p>
+                    </div>
+                    
+                    {/* --- CONTROL DE ETAPAS (Migrado del Dashboard) --- */}
+                    <div className="mt-2 md:mt-0 md:ml-6">
+                        <label className="text-xs text-gray-300 block mb-1">Cambiar Etapa:</label>
+                        <select
+                            className="text-gray-900 text-sm rounded-lg block w-full p-2 bg-gray-50 border border-gray-300 focus:ring-green-500 focus:border-green-500"
+                            value={cycleData.current_stage_index}
+                            onChange={handleStageChange}
+                            disabled={cycleActionLoading}
+                        >
+                            {cycleData.stages.map((stage, i) => (
+                                <option key={i} value={i}>
+                                {stage.stage_name} {i === cycleData.current_stage_index ? '(Actual)' : ''}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+            </div>
           ) : (
-            <p className="text-xl opacity-80">Sin ciclo de cultivo activo</p>
+            <div className="bg-red-500/20 border border-red-500/50 p-6 rounded-xl backdrop-blur-sm max-w-xl">
+                <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                    <AlertTriangle className="w-6 h-6" /> Sin ciclo activo
+                </h3>
+                <p className="text-gray-100 mb-4">
+                    Para comenzar a monitorear datos, debes iniciar un ciclo de cultivo en esta parcela.
+                </p>
+                <Button 
+                    variant="primary" 
+                    className="bg-white text-green-900 hover:bg-gray-100 border-none"
+                    onClick={handleCreateCycle}
+                    disabled={cycleActionLoading}
+                >
+                    {cycleActionLoading ? 'Creando...' : 'Comenzar Ciclo Ahora'}
+                </Button>
+            </div>
           )}
         </div>
       </section>
@@ -263,7 +388,7 @@ const FieldDetails = () => {
             </section>
         )}
 
-        {/* 2. SECCIÓN DE FILTROS (NUEVO) */}
+        {/* 2. SECCIÓN DE FILTROS */}
         {hasCycle && (
             <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                 <h3 className="text-lg font-bold text-[#2E5C3F] mb-4 flex items-center gap-2">
@@ -402,7 +527,6 @@ const FieldDetails = () => {
                 Últimas fotografías del cultivo
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {/* Invertimos y tomamos las últimas 6 */}
                 {[...currentStage.readings].reverse().slice(0, 6).map((reading, i) => (
                   <div key={i} className="card overflow-hidden group">
                     <div className="relative h-64">
@@ -433,13 +557,6 @@ const FieldDetails = () => {
           </>
         )}
 
-        <div className="text-center">
-          <Link to="/farmer">
-            <Button variant="primary" size="lg" className="px-12 py-4 text-xl shadow-lg">
-              Volver al Dashboard
-            </Button>
-          </Link>
-        </div>
       </main>
 
       <Footer />

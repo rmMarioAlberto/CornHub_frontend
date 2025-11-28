@@ -1,6 +1,6 @@
 // src/routes/index.jsx
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from '../components/common/ProtectedRoute';
 
 // --- PÁGINAS PÚBLICAS ---
@@ -12,19 +12,12 @@ import AdminDashboard from '../pages/AdminDashboard';
 import IoTModuleSetup from '../pages/IoTModuleSetup';
 import FieldManagement from '../pages/FieldManagement';
 import UserManagement from '../pages/UserManagement';
-import FarmerDashboard from '../pages/FarmerDashboard';
+// FieldDetails ahora actúa como el Dashboard del agricultor
 import FieldDetails from '../pages/FieldDetails';
-// import FieldRegistration from '../pages/FieldRegistration';
-import Profile from '../pages/Profile';
-// import NotFound from '../pages/NotFound';
 
-/* -------------------------------------------------------------------------- */
-/*  RUTAS PROTEGIDAS POR ROL (2 = admin, 1 = farmer, 3 = IoT)                 */
-/* -------------------------------------------------------------------------- */
 const AppRoutes = () => {
   return (
     <Routes>
-
       {/* ====================== RUTAS PÚBLICAS ====================== */}
       <Route path="/" element={<Home />} />
       <Route path="/home" element={<Home />} />
@@ -40,17 +33,14 @@ const AppRoutes = () => {
 
       {/* ====================== RUTAS FARMER (tipo_usuario = 1) ====================== */}
       <Route element={<ProtectedRoute allowedRoles={[1]} />}>
-        <Route path="/farmer" element={<FarmerDashboard />} />
+        {/* Ruta base: Redirige a la vista con ID o carga la primera parcela */}
+        <Route path="/farmer" element={<FieldDetails />} />
+        {/* Ruta con ID específico */}
+        <Route path="/farmer/:id" element={<FieldDetails />} />
         
-        {/* Detalles completos de una parcela (gráficas, historial, etc.) */}
-        <Route path="/field-details/:id" element={<FieldDetails />} />
-        
-        {/* Perfil del agricultor */}
-        {/* <Route path="/profile" element={<Profile />} /> */}
+        {/* Redirección de compatibilidad por si usabas /field-details */}
+        <Route path="/field-details/:id" element={<Navigate to="/farmer/:id" replace />} />
       </Route>
-
-      {/* ====================== RUTA 404 ====================== */}
-      {/* <Route path="*" element={<NotFound />} /> */}
 
     </Routes>
   );
