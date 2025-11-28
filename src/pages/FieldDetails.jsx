@@ -190,7 +190,7 @@ const FieldDetails = () => {
           </Link>
           
           {/* Título con sombra para mejor contraste */}
-          <h1 className="text-5xl font-bold mb-4 drop-shadow-md">
+          <h1 className="text-5xl font-bold text-white mb-4 drop-shadow-md">
              {parcelaInfo?.nombre || 'Mi Parcela'}
           </h1>
           

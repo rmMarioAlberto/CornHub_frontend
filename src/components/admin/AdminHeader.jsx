@@ -12,7 +12,7 @@ const AdminHeader = () => {
 
   const navItems = [
     //{ label: 'Mi Perfil', link: '/admin/profile' },
-    { label: 'Crear Cultivos', link: '/admin/fields' },
+    { label: 'Cultivos', link: '/admin/fields' },
     { label: 'Usuarios', link: '/admin/users' },
     { label: 'IoT', link: '/admin/iot' },
   ];

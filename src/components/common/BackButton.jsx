@@ -14,7 +14,6 @@ const BackButton = ({ label = "Regresar", className = "" }) => {
         bg-white 
         border-2 border-[#4CAF50] 
         text-[#2E7D32] 
-        font-medium text-sm 
         rounded-lg 
         shadow-sm 
         hover:bg-[#4CAF50] 
