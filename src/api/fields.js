@@ -42,3 +42,8 @@ export const getIotsParcela = async (idParcela) => {
   // Nota: El backend espera un POST según tu documentación
   return await api.post('/parcela/getIotsParcela', { idParcela });
 };
+
+// Obtener predicción del clima (POST /parcela/weather-prediction)
+export const getWeatherPrediction = async (idParcela) => {
+  return await api.post('/parcela/weather-prediction', { parcelaId: idParcela });
+};

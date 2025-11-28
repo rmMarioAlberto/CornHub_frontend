@@ -5,7 +5,8 @@ import {
   AlertTriangle, Camera, Thermometer, Droplet, FlaskConical, 
   LayoutDashboard, Filter, Calendar, CheckSquare, Square, ChevronDown,
   XCircle, CheckCircle, PlayCircle, MapPin, Sprout,
-  Activity, Image as ImageIcon // Iconos para estados vacíos
+  Activity, Image as ImageIcon,
+  Brain, Sparkles, TrendingUp 
 } from 'lucide-react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -17,7 +18,8 @@ import {
   createCycle, 
   updateCurrentStage, 
   endCycle, 
-  getIotsParcela 
+  getIotsParcela,
+  getWeatherPrediction 
 } from '../api/fields'; 
 
 import useAuth from '../hooks/useAuth';
@@ -26,6 +28,7 @@ import Footer from '../components/common/Footer';
 import Button from '../components/common/Button';
 import AlertBanner from '../components/farmer/AlertBanner';
 import FieldMap from '../components/farmer/FieldMap';
+import ChatbotWidget from '../components/chatbot/ChatbotWidget';
 import { calculateFieldCoverage } from '../utils/calculateIoTModules';
 
 const FieldDetails = () => {
@@ -52,6 +55,11 @@ const FieldDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [cycleActionLoading, setCycleActionLoading] = useState(false);
+
+  // Estados de Predicción
+  const [predictionData, setPredictionData] = useState(null);
+  const [predictionLoading, setPredictionLoading] = useState(false);
+  const [predictionError, setPredictionError] = useState(null);
 
   // --- DETECTAR CLICK FUERA DEL DROPDOWN ---
   useEffect(() => {
@@ -107,6 +115,21 @@ const FieldDetails = () => {
       alert('Error al finalizar el ciclo: ' + err.message);
     } finally {
       setCycleActionLoading(false);
+    }
+  };
+
+    const fetchPrediction = async () => {
+    if (!id) return;
+    setPredictionLoading(true);
+    setPredictionError(null);
+    try {
+      const res = await getWeatherPrediction(Number(id));
+      setPredictionData(res.data || res);
+    } catch (err) {
+      console.error("Error cargando predicción:", err);
+      setPredictionError(err.message || 'No se pudo generar la predicción');
+    } finally {
+      setPredictionLoading(false);
     }
   };
 
@@ -543,8 +566,145 @@ const FieldDetails = () => {
                 <p>Revisa las imágenes y valores de sensores inmediatamente.</p>
               </AlertBanner>
             )}
+            {/* --- SECCIÓN DE PREDICCIÓN INTELIGENTE (AI) --- */}
+            <section className="mb-12 relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#1a2e22] to-[#0f1f16] text-white shadow-2xl border border-[#6DA544]/30">
+                {/* Efectos de fondo */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[#6DA544]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3 pointer-events-none"></div>
 
-            {/* --- SECCIÓN DE GRÁFICAS (CON EMPTY STATE) --- */}
+                <div className="p-8 relative z-10">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+                        <div>
+                            <h3 className="text-2xl font-bold flex items-center gap-3 text-transparent bg-clip-text bg-gradient-to-r from-[#C3D18D] to-white">
+                                <Brain className="w-8 h-8 text-[#6DA544]" />
+                                Predicción Inteligente de Cultivo
+                            </h3>
+                            <p className="text-gray-400 mt-2 max-w-xl">
+                                Nuestro modelo de IA analiza tus datos históricos para predecir las condiciones próximas de tu cultivo.
+                            </p>
+                        </div>
+                        
+                        {!predictionData && !predictionLoading && (
+                            <Button 
+                                onClick={fetchPrediction}
+                                className="bg-[#6DA544] hover:bg-[#5c8d39] text-white border-none shadow-[0_0_15px_rgba(109,165,68,0.4)] hover:shadow-[0_0_25px_rgba(109,165,68,0.6)] transition-all duration-300"
+                            >
+                                <Sparkles className="w-5 h-5 mr-2" />
+                                Generar Predicción
+                            </Button>
+                        )}
+                    </div>
+
+                    {predictionLoading && (
+                        <div className="py-12 flex flex-col items-center justify-center text-center">
+                            <div className="relative w-16 h-16 mb-4">
+                                <div className="absolute inset-0 border-4 border-[#6DA544]/20 rounded-full"></div>
+                                <div className="absolute inset-0 border-4 border-[#6DA544] border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+                            <p className="text-[#C3D18D] animate-pulse">Analizando patrones históricos...</p>
+                        </div>
+                    )}
+
+                    {predictionError && (
+                        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 text-center">
+                            <AlertTriangle className="w-10 h-10 text-red-400 mx-auto mb-3" />
+                            <h4 className="text-lg font-bold text-red-200">No se pudo generar la predicción</h4>
+                            <p className="text-red-300/80 mb-4">{predictionError}</p>
+                            <Button onClick={fetchPrediction} variant="outline" className="border-red-400 text-red-300 hover:bg-red-500/20">
+                                Reintentar
+                            </Button>
+                        </div>
+                    )}
+
+                    {predictionData && (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                            {/* Predicciones principales */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                                <div className="bg-gradient-to-br from-orange-500/10 to-orange-600/5 backdrop-blur-md rounded-xl p-6 border border-orange-400/20">
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <div className="bg-orange-500/20 p-3 rounded-lg">
+                                            <Thermometer className="w-8 h-8 text-orange-400" />
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-400 text-sm font-medium">Temperatura Predicha</p>
+                                            <p className="text-4xl font-bold text-white">{predictionData.prediccion.temperatura_predicha.toFixed(1)}°C</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between text-sm">
+                                        <span className="text-gray-400">Confianza del modelo:</span>
+                                        <span className="text-orange-300 font-semibold">{Math.round(predictionData.prediccion.confianza_temperatura * 100)}%</span>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 backdrop-blur-md rounded-xl p-6 border border-blue-400/20">
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <div className="bg-blue-500/20 p-3 rounded-lg">
+                                            <Droplet className="w-8 h-8 text-blue-400" />
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-400 text-sm font-medium">Humedad Predicha</p>
+                                            <p className="text-4xl font-bold text-white">{predictionData.prediccion.humedad_predicha.toFixed(1)}%</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between text-sm">
+                                        <span className="text-gray-400">Confianza del modelo:</span>
+                                        <span className="text-blue-300 font-semibold">{Math.round(predictionData.prediccion.confianza_humedad * 100)}%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Estadísticas históricas */}
+                            <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10 mb-6">
+                                <h4 className="text-lg font-semibold text-gray-200 mb-4 flex items-center gap-2">
+                                    <TrendingUp className="w-5 h-5 text-[#6DA544]" />
+                                    Estadísticas Históricas
+                                </h4>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <div className="text-center">
+                                        <p className="text-gray-400 text-xs mb-1">Temp. Promedio</p>
+                                        <p className="text-white font-bold">{predictionData.estadisticas.temperatura_promedio.toFixed(1)}°C</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-gray-400 text-xs mb-1">Temp. Máxima</p>
+                                        <p className="text-white font-bold">{predictionData.estadisticas.temperatura_max.toFixed(1)}°C</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-gray-400 text-xs mb-1">Humedad Promedio</p>
+                                        <p className="text-white font-bold">{predictionData.estadisticas.humedad_promedio.toFixed(1)}%</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-gray-400 text-xs mb-1">Humedad Máxima</p>
+                                        <p className="text-white font-bold">{predictionData.estadisticas.humedad_max}%</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Calidad de datos */}
+                            <div className={`rounded-xl p-4 border ${
+                                predictionData.data_quality.quality_score > 0.7 
+                                    ? 'bg-green-500/10 border-green-400/30' 
+                                    : predictionData.data_quality.quality_score > 0.4
+                                    ? 'bg-yellow-500/10 border-yellow-400/30'
+                                    : 'bg-red-500/10 border-red-400/30'
+                            }`}>
+                                <div className="flex items-center gap-3">
+                                    <Activity className="w-6 h-6 text-white" />
+                                    <div className="flex-1">
+                                        <p className="text-white font-semibold text-sm">{predictionData.data_quality.message}</p>
+                                        <p className="text-gray-400 text-xs mt-1">
+                                            {predictionData.data_quality.real_readings} lecturas reales • {predictionData.data_quality.synthetic_readings} sintéticas
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <p className="text-center text-xs text-gray-500 mt-4">
+                                * Predicción generada el {new Date(predictionData.prediccion.fecha_prediccion).toLocaleString('es-ES')}
+                            </p>
+                        </div>
+                    )}
+                </div>
+            </section>            {/* --- SECCIÓN DE GRÁFICAS (CON EMPTY STATE) --- */}
             {hasData ? (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
                 <div className="card p-8">
@@ -657,6 +817,7 @@ const FieldDetails = () => {
           </>
         )}
       </main>
+      {parcelaInfo && <ChatbotWidget selectedParcela={parcelaInfo} />}
 
       <Footer />
     </div>
