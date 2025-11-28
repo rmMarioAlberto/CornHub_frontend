@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Filter, Calendar, CheckSquare, Square, ChevronDown,
   XCircle, CheckCircle, PlayCircle, MapPin, Sprout,
   Activity, Image as ImageIcon,
-  Brain, Sparkles, TrendingUp 
+  Brain, Sparkles, TrendingUp ,HelpCircle 
 } from 'lucide-react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -631,7 +631,14 @@ const FieldDetails = () => {
                                         </div>
                                     </div>
                                     <div className="flex items-center justify-between text-sm">
-                                        <span className="text-gray-400">Confianza del modelo:</span>
+                                        <div className="flex items-center gap-1 group relative">
+                                            <span className="text-gray-400">Confianza del modelo:</span>
+                                            <HelpCircle className="w-3.5 h-3.5 text-gray-500 cursor-help" />
+                                            <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block w-64 bg-gray-900 text-white text-xs rounded-lg p-3 shadow-xl z-50">
+                                                <p>La confianza del modelo depende de la cantidad y calidad de datos históricos disponibles para el análisis.</p>
+                                                <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                                            </div>
+                                        </div>
                                         <span className="text-orange-300 font-semibold">{Math.round(predictionData.prediccion.confianza_temperatura * 100)}%</span>
                                     </div>
                                 </div>
@@ -647,7 +654,14 @@ const FieldDetails = () => {
                                         </div>
                                     </div>
                                     <div className="flex items-center justify-between text-sm">
-                                        <span className="text-gray-400">Confianza del modelo:</span>
+                                        <div className="flex items-center gap-1 group relative">
+                                            <span className="text-gray-400">Confianza del modelo:</span>
+                                            <HelpCircle className="w-3.5 h-3.5 text-gray-500 cursor-help" />
+                                            <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block w-64 bg-gray-900 text-white text-xs rounded-lg p-3 shadow-xl z-50">
+                                                <p>La confianza del modelo depende de la cantidad y calidad de datos históricos disponibles para el análisis.</p>
+                                                <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                                            </div>
+                                        </div>
                                         <span className="text-blue-300 font-semibold">{Math.round(predictionData.prediccion.confianza_humedad * 100)}%</span>
                                     </div>
                                 </div>
